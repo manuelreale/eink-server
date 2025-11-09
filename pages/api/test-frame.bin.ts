@@ -1,23 +1,24 @@
-// app/api/test-frame.bin/route.ts
-export const dynamic = "force-dynamic"; // don't cache while testing
+import type { NextApiRequest, NextApiResponse } from "next";
 
-export async function GET() {
-  const WIDTH = 960;
-  const HEIGHT = 680;
-  const FRAME_BYTES = (WIDTH * HEIGHT) / 8; // 81600 bytes per color plane
+const WIDTH = 960;
+const HEIGHT = 680;
+const BYTES_PER_PLANE = (WIDTH * HEIGHT) / 8; // 81600
 
-  // Make a simple all-black test frame
-  const blackPlane = Buffer.alloc(FRAME_BYTES, 0x00); // bits 0 = black
-  const redPlane   = Buffer.alloc(FRAME_BYTES, 0xFF); // bits 1 = no red
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  // All-black test frame:
+  // black plane = 0x00 (bits 0 → black)
+  // red plane   = 0xFF (no red)
+  const black = new Uint8Array(BYTES_PER_PLANE);
+  const red = new Uint8Array(BYTES_PER_PLANE);
 
-  const combined = Buffer.concat([blackPlane, redPlane]);
+  black.fill(0x00); // every pixel black
+  red.fill(0xff);   // no red pixels
 
-  return new Response(combined, {
-    status: 200,
-    headers: {
-      "Content-Type": "application/octet-stream",
-      "Content-Length": combined.length.toString(),
-      "Cache-Control": "no-store",
-    },
-  });
+  const full = Buffer.alloc(BYTES_PER_PLANE * 2);
+  Buffer.from(black).copy(full, 0);
+  Buffer.from(red).copy(full, BYTES_PER_PLANE);
+
+  res.setHeader("Content-Type", "application/octet-stream");
+  res.setHeader("Content-Length", full.length.toString());
+  res.status(200).send(full);
 }
