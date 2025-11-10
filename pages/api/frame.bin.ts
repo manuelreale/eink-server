@@ -1,3 +1,4 @@
+// pages/api/frame.bin.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
@@ -7,13 +8,13 @@ const WIDTH = 960;
 const HEIGHT = 680;
 const BYTES_PER_PLANE = (WIDTH * HEIGHT) / 8;
 
-// ---------- Bitplane helpers ----------
+// ---- plane helpers ----
 function setBlackPixel(black: Uint8Array, x: number, y: number) {
   const pixelIndex = y * WIDTH + x;
   const byteIndex = pixelIndex >> 3;
   const bitIndex = 7 - (pixelIndex & 0x07);
   const mask = 1 << bitIndex;
-  black[byteIndex] &= ~mask;
+  black[byteIndex] &= ~mask; // 0 = black
 }
 
 function setRedPixel(red: Uint8Array, x: number, y: number) {
@@ -21,7 +22,7 @@ function setRedPixel(red: Uint8Array, x: number, y: number) {
   const byteIndex = pixelIndex >> 3;
   const bitIndex = 7 - (pixelIndex & 0x07);
   const mask = 1 << bitIndex;
-  red[byteIndex] &= ~mask;
+  red[byteIndex] &= ~mask; // 0 = red
 }
 
 function classifyPixel(
@@ -29,9 +30,7 @@ function classifyPixel(
   g: number,
   b: number
 ): "white" | "black" | "red" {
-  // very red-ish → red plane
   if (r > 160 && g < 80 && b < 80) return "red";
-
   const lum = 0.299 * r + 0.587 * g + 0.114 * b;
   return lum < 128 ? "black" : "white";
 }
@@ -45,187 +44,42 @@ async function getBrowser() {
       height: HEIGHT,
       deviceScaleFactor: 1,
     },
-    executablePath,
+    executablePath: executablePath || undefined,
     headless: true,
   });
 }
 
-// ---------- API handler ----------
+// ---- API handler ----
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  let browser: puppeteer.Browser | null = null;
+
   try {
-    const browser = await getBrowser();
+    browser = await getBrowser();
     const page = await browser.newPage();
 
-    // Inline HTML with Japanese font
-    const html = `
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- Load Japanese-capable font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * { box-sizing: border-box; }
+    const proto =
+      (req.headers["x-forwarded-proto"] as string | undefined) || "https";
+    const host = req.headers.host;
+    const pageUrl = `${proto}://${host}/eink`;
 
-      body {
-        margin: 0;
-        width: ${WIDTH}px;
-        height: ${HEIGHT}px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #ffffff;
-        font-family: "Noto Serif JP", system-ui, -apple-system,
-          BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
+    await page.goto(pageUrl, { waitUntil: "networkidle0" });
 
-      .page {
-        position: relative;
-        width: 880px;
-        height: 640px;
-        border: 6px solid #000;
-        padding: 24px;
-        display: grid;
-        grid-template-columns: 150px 1fr 150px;
-        grid-template-rows: 1fr auto;
-        column-gap: 12px;
-        row-gap: 16px;
-      }
+    // screenshot as PNG
+    const pngBuffer = (await page.screenshot({
+      type: "png",
+    })) as Buffer;
 
-      .left {
-        border-right: 3px solid #000;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-right: 8px;
-      }
-
-      .weekday {
-        writing-mode: vertical-rl;
-        text-orientation: upright;
-        font-size: 52px;
-        font-weight: 900;
-        letter-spacing: 4px;
-      }
-
-      .weekday-en {
-        margin-top: 12px;
-        font-size: 14px;
-        font-weight: 600;
-      }
-
-      .center {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .year {
-        font-size: 40px;
-        font-weight: 900;
-        letter-spacing: 6px;
-      }
-
-      .bigday {
-        font-size: 260px;
-        font-weight: 900;
-        line-height: 1;
-      }
-
-      .right {
-        border-left: 3px solid #000;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-left: 8px;
-      }
-
-      .month-num {
-        font-size: 80px;
-        font-weight: 900;
-        line-height: 1;
-      }
-
-      .month-label {
-        font-size: 36px;
-        font-weight: 900;
-      }
-
-      .red {
-        color: #c00000;
-        font-size: 24px;
-        margin-top: 8px;
-      }
-
-      .fortune {
-        margin-top: 24px;
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        background: #000;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        font-weight: 900;
-      }
-
-      .kanji {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 60px;
-        font-weight: 900;
-        border-top: 3px solid #000;
-        padding-top: 6px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="page">
-      <div class="left">
-        <div class="weekday">木曜日</div>
-        <div class="weekday-en">[THU]</div>
-      </div>
-
-      <div class="center">
-        <div class="year">2026</div>
-        <div class="bigday">1</div>
-      </div>
-
-      <div class="right">
-        <div class="month-num">1</div>
-        <div class="month-label">月</div>
-        <div class="red">元日</div>
-        <div class="fortune">大</div>
-      </div>
-
-      <div class="kanji">安心立命</div>
-    </div>
-  </body>
-</html>
-    `;
-
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    const pngBuffer = (await page.screenshot({ type: "png" })) as Buffer;
-    await browser.close();
-
-    // Optional debug mode: /api/frame.bin?debug=1 → see the PNG directly in browser
+    // Debug view in browser: /api/frame.bin?debug=1
     if (req.query.debug === "1") {
       res.setHeader("Content-Type", "image/png");
       res.status(200).send(pngBuffer);
       return;
     }
 
-    // Convert PNG → black / red planes
+    // PNG → raw RGBA
     const { data, info } = await sharp(pngBuffer)
       .resize(WIDTH, HEIGHT, { fit: "cover" })
       .ensureAlpha()
@@ -259,9 +113,13 @@ export default async function handler(
     res.setHeader("Content-Length", full.length.toString());
     res.status(200).send(full);
   } catch (err: any) {
-    console.error("Render error:", err);
+    console.error("frame.bin error:", err);
     res
       .status(500)
       .json({ error: err?.message || "Unknown error while rendering frame" });
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 }
