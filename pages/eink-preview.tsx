@@ -1,345 +1,235 @@
-// pages/eink.tsx
-import React from "react";
+import type { NextApiRequest, NextApiResponse } from "next";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
+import sharp from "sharp";
 
-export default function EInkCalendar() {
-  return (
-    <div className="root">
-      <div className="page">
+const WIDTH = 960;
+const HEIGHT = 680;
+const BYTES_PER_PLANE = (WIDTH * HEIGHT) / 8;
 
-        {/* LEFT VERTICAL WEEKDAY COLUMN */}
-        <div className="left-column">
-          <div className="weekday-large">木曜日</div>
-          <div className="weekday-en">[THU]</div>
-          <div className="left-sub">
-            <div>旧 11月13日</div>
-            <div>大安</div>
-          </div>
-        </div>
+// ------------------ BIT HELPERS ------------------
 
-        {/* CENTER BIG DAY + FLAGS */}
-        <div className="center-column">
-          <div className="top-year">2026</div>
+function setBlackPixel(black: Uint8Array, x: number, y: number) {
+  const pixelIndex = y * WIDTH + x;
+  const byteIndex = pixelIndex >> 3;
+  const bitIndex = 7 - (pixelIndex & 0x07);
+  black[byteIndex] &= ~(1 << bitIndex); // 0 = black
+}
 
-          <div className="flags-row">
-            <div className="flag flag-left" />
-            <div className="big-day">1</div>
-            <div className="flag flag-right" />
-          </div>
+function setRedPixel(red: Uint8Array, x: number, y: number) {
+  const pixelIndex = y * WIDTH + x;
+  const byteIndex = pixelIndex >> 3;
+  const bitIndex = 7 - (pixelIndex & 0x07);
+  red[byteIndex] &= ~(1 << bitIndex); // 0 = red
+}
 
-          {/* Bottom main text block */}
-          <div className="main-text-block">
-            <div className="kanji-title">安心立命</div>
-            <div className="reading">あんしんりつめい</div>
-            <p className="description">
-              すべてを尽くしたら天命に身を任せ、<br />
-              迷うことのない心を育てること。<br />
-              仏教での心の安らぎをいう。
-            </p>
-          </div>
-        </div>
+function classifyPixel(r: number, g: number, b: number): "white" | "black" | "red" {
+  // Red-ish → red
+  if (r > 160 && g < 80 && b < 80) return "red";
+  // Otherwise, check brightness
+  const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+  return lum < 128 ? "black" : "white";
+}
 
-        {/* RIGHT MONTH / ERA COLUMN */}
-        <div className="right-column">
-          <div className="era">令和8年</div>
-          <div className="era-sub">昭和101年</div>
+// ------------------ BROWSER SETUP ------------------
 
-          <div className="month-block">
-            <div className="month-number">1</div>
-            <div className="month-label">月</div>
-          </div>
+async function getBrowser() {
+  const executablePath = await chromium.executablePath();
+  return puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: { width: WIDTH, height: HEIGHT, deviceScaleFactor: 1 },
+    executablePath,
+    headless: true, // ✅ important
+  });
+}
 
-          <div className="new-year">元日</div>
+// ------------------ API HANDLER ------------------
 
-          <div className="fortune-circle">
-            <div className="fortune-text">大</div>
-          </div>
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
 
-          <div className="notes">
-            <div>不省エネルギーの日で賀</div>
-            <div>一粒万倍日</div>
-          </div>
-        </div>
+    // --- HTML TEMPLATE (inlined) ---
+    const html = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 
-        {/* BOTTOM FOOTER AREA */}
-        <div className="footer">
-          <div className="footer-left">
-            <div className="footer-label">誕生花・花言葉</div>
-            <div className="flower-name">梅（うめ）</div>
-            <div className="flower-words">忠実・気品・高潔</div>
-          </div>
-
-          <div className="footer-right">
-            <div className="today-events-title">今日の出来事</div>
-            <ul className="events-list">
-              <li>国産初のTVアニメ「鉄腕アトム」放送開始</li>
-              <li>欧州連合（EU）単一通貨「ユーロ」導入</li>
-              <li>○○地震発生 M7.6 死者244人</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .root {
-          width: 960px;
-          height: 680px;
-          background: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica",
-            "Arial", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo",
-            sans-serif;
-        }
-
-        .page {
-          position: relative;
-          width: 880px;
-          height: 640px;
-          border: 6px solid #000;
-          padding: 24px;
-          box-sizing: border-box;
-          display: grid;
-          grid-template-columns: 160px 1fr 180px;
-          grid-template-rows: 1fr auto;
-          column-gap: 12px;
-          row-gap: 16px;
-        }
-
-        .left-column {
-          grid-row: 1 / span 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          border-right: 3px solid #000;
-          padding-right: 10px;
-        }
-
-        .weekday-large {
-          writing-mode: vertical-rl;
-          text-orientation: upright;
-          font-size: 52px;
-          font-weight: 900;
-          letter-spacing: 4px;
-          margin-top: 4px;
-        }
-
-        .weekday-en {
-          margin-top: 16px;
-          font-size: 14px;
-          font-weight: 600;
-        }
-
-        .left-sub {
-          margin-top: auto;
-          font-size: 14px;
-          text-align: center;
-          margin-bottom: 8px;
-        }
-
-        .center-column {
-          grid-row: 1 / span 1;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .top-year {
-          font-size: 40px;
-          font-weight: 900;
-          letter-spacing: 8px;
-          margin-bottom: 4px;
-        }
-
-        .flags-row {
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          width: 100%;
-        }
-
-        .flag {
-          width: 70px;
-          height: 140px;
-          border: 4px solid #c00000;
-          border-radius: 4px;
-          position: relative;
-        }
-
-        .flag::before {
-          content: "";
-          position: absolute;
-          inset: 20px;
-          border-radius: 999px;
-          background: #c00000; /* red circle */
-        }
-
-        .flag-left {
-          margin-right: 12px;
-        }
-
-        .flag-right {
-          margin-left: 12px;
-        }
-
-        .big-day {
-          font-size: 260px;
-          font-weight: 900;
-          line-height: 1;
-        }
-
-        .right-column {
-          grid-row: 1 / span 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          border-left: 3px solid #000;
-          padding-left: 10px;
-        }
-
-        .era {
-          margin-top: 8px;
-          font-size: 18px;
-          font-weight: 700;
-        }
-
-        .era-sub {
-          margin-top: 4px;
-          font-size: 13px;
-        }
-
-        .month-block {
-          margin-top: 36px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .month-number {
-          font-size: 80px;
-          font-weight: 900;
-          line-height: 1;
-        }
-
-        .month-label {
-          font-size: 36px;
-          font-weight: 900;
-          line-height: 1;
-        }
-
-        .new-year {
-          margin-top: 6px;
-          font-size: 18px;
-          color: #c00000;
-          font-weight: 700;
-        }
-
-        .fortune-circle {
-          margin-top: 24px;
-          width: 70px;
-          height: 70px;
-          border-radius: 999px;
-          background: #000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .fortune-text {
-          color: #fff;
-          font-size: 32px;
-          font-weight: 900;
-        }
-
-        .notes {
-          margin-top: 18px;
-          font-size: 12px;
-          text-align: center;
-        }
-
-        .main-text-block {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          padding: 8px 16px 0 16px;
-          border-top: 3px solid #000;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .kanji-title {
-          font-size: 52px;
-          font-weight: 900;
-        }
-
-        .reading {
-          margin-top: 4px;
-          font-size: 14px;
-        }
-
-        .description {
-          margin-top: 6px;
-          font-size: 13px;
-          text-align: center;
-        }
-
-        .footer {
-          grid-column: 2 / span 1;
-          grid-row: 2 / span 1;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          padding-top: 6px;
-          border-top: 2px solid #000;
-        }
-
-        .footer-left {
-          max-width: 40%;
-          font-size: 12px;
-        }
-
-        .footer-label {
-          font-weight: 700;
-          border-left: 4px solid #000;
-          padding-left: 6px;
-          margin-bottom: 4px;
-        }
-
-        .flower-name {
-          font-size: 16px;
-          font-weight: 700;
-          margin-bottom: 2px;
-        }
-
-        .flower-words {
-          font-size: 12px;
-        }
-
-        .footer-right {
-          max-width: 55%;
-          font-size: 12px;
-        }
-
-        .today-events-title {
-          font-weight: 700;
-          border-left: 4px solid #000;
-          padding-left: 6px;
-          margin-bottom: 4px;
-        }
-
-        .events-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .events-list li {
-          margin-bottom: 2px;
-        }
-      `}</style>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      width: ${WIDTH}px;
+      height: ${HEIGHT}px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Noto Sans JP", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .page {
+      position: relative;
+      width: 880px;
+      height: 640px;
+      border: 6px solid black;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 160px 1fr 180px;
+      grid-template-rows: 1fr auto;
+      column-gap: 12px;
+      row-gap: 16px;
+    }
+    .left {
+      border-right: 3px solid black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 10px;
+    }
+    .weekday {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: 4px;
+    }
+    .weekday-en {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .year {
+      font-size: 40px;
+      font-weight: 900;
+    }
+    .bigday {
+      font-size: 260px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 0;
+    }
+    .right {
+      border-left: 3px solid black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-left: 10px;
+    }
+    .month-num {
+      font-size: 80px;
+      font-weight: 900;
+    }
+    .month-label {
+      font-size: 36px;
+      font-weight: 900;
+    }
+    .red {
+      color: #c00000;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .fortune {
+      margin-top: 24px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 900;
+    }
+    .kanji {
+      position: absolute;
+      bottom: 10px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 52px;
+      font-weight: 900;
+      border-top: 3px solid black;
+      padding-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="left">
+      <div class="weekday">木曜日</div>
+      <div class="weekday-en">[THU]</div>
     </div>
-  );
+
+    <div class="center">
+      <div class="year">2026</div>
+      <div class="bigday">1</div>
+    </div>
+
+    <div class="right">
+      <div class="month-num">1</div>
+      <div class="month-label">月</div>
+      <div class="red">元日</div>
+      <div class="fortune">大</div>
+    </div>
+
+    <div class="kanji">安心立命</div>
+  </div>
+</body>
+</html>
+    `;
+
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pngBuffer = (await page.screenshot({ type: "png" })) as Buffer;
+    await browser.close();
+
+    // --- Convert to e-ink bitplanes ---
+    const { data, info } = await sharp(pngBuffer)
+      .resize(WIDTH, HEIGHT, { fit: "cover" })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const blackPlane = new Uint8Array(BYTES_PER_PLANE);
+    const redPlane = new Uint8Array(BYTES_PER_PLANE);
+    blackPlane.fill(0xff);
+    redPlane.fill(0xff);
+
+    let idx = 0;
+    for (let y = 0; y < info.height; y++) {
+      for (let x = 0; x < info.width; x++) {
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        idx += 4;
+
+        const color = classifyPixel(r, g, b);
+        if (color === "black") setBlackPixel(blackPlane, x, y);
+        else if (color === "red") setRedPixel(redPlane, x, y);
+      }
+    }
+
+    const full = Buffer.alloc(BYTES_PER_PLANE * 2);
+    Buffer.from(blackPlane).copy(full, 0);
+    Buffer.from(redPlane).copy(full, BYTES_PER_PLANE);
+
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Length", full.length.toString());
+    res.status(200).send(full);
+
+  } catch (err: any) {
+    console.error("Render error:", err);
+    res.status(500).json({ error: err?.message || String(err) });
+  }
 }
