@@ -1,7 +1,7 @@
 // pages/api/frame.bin.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+import puppeteer, { Browser } from "puppeteer-core";
 import sharp from "sharp";
 
 const WIDTH = 960;
@@ -37,6 +37,7 @@ function classifyPixel(
 
 async function getBrowser() {
   const executablePath = await chromium.executablePath();
+
   return puppeteer.launch({
     args: chromium.args,
     defaultViewport: {
@@ -54,7 +55,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  let browser: puppeteer.Browser | null = null;
+  let browser: Browser | null = null;
 
   try {
     browser = await getBrowser();
@@ -67,7 +68,7 @@ export default async function handler(
 
     await page.goto(pageUrl, { waitUntil: "networkidle0" });
 
-    // screenshot as PNG
+    // Screenshot as PNG
     const pngBuffer = (await page.screenshot({
       type: "png",
     })) as Buffer;
