@@ -53,16 +53,16 @@ function classifyPixel(r: number, g: number, b: number): "white" | "black" | "re
 async function getBrowser() {
   const executablePath = await chromium.executablePath();
 
-  return puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: {
-      width: WIDTH,
-      height: HEIGHT,
-      deviceScaleFactor: 1,
-    },
-    executablePath,
-    headless: chromium.headless,
-  });
+return puppeteer.launch({
+  args: chromium.args,
+  defaultViewport: {
+    width: WIDTH,
+    height: HEIGHT,
+    deviceScaleFactor: 1,
+  },
+  executablePath,
+  headless: true, // ✅ fixed here
+});
 }
 
 // ---- API handler ----
