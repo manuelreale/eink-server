@@ -64,7 +64,7 @@ export default async function handler(
     const proto =
       (req.headers["x-forwarded-proto"] as string | undefined) || "https";
     const host = req.headers.host;
-    const pageUrl = `${proto}://${host}/eink`;
+    const pageUrl = `https://www.google.com/`;
 
     await page.goto(pageUrl, { waitUntil: "networkidle0" });
 
