@@ -64,7 +64,8 @@ export default async function handler(
     const proto =
       (req.headers["x-forwarded-proto"] as string | undefined) || "https";
     const host = req.headers.host;
-    const pageUrl = `https://en.wikipedia.org/wiki/Special:Random`;
+    // const pageUrl = `https://en.wikipedia.org/wiki/Special:Random`;
+    const pageUrl = `${proto}://${host}/eink`;
 
     await page.goto(pageUrl, { waitUntil: "networkidle0" });
 
