@@ -16,7 +16,7 @@ export default function EInkCalendar() {
       </Head>
 
       <div className="root">
-        <img src="/img.png" className="w-full h-full absolute top-0 left-0" />
+        <img src="/img.png" className="w-full h-full absolute top-0 left-0 z-10" />
         <div className="page">
           {/* LEFT VERTICAL WEEKDAY COLUMN */}
           <div className="left-column">
