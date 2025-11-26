@@ -11,9 +11,9 @@ export default function EInkCalendar() {
         <title>E-Ink Calendar</title>
       </Head>
 
-      <div className="root">
+      <div className="w-full h-full absolute top-0 left-0">
         {/* <img src="/img2.png" className="w-full h-full absolute top-0 left-0 z-10" /> */}
-        <div className="page" style={pixelPatternStyles.sprinkle}></div>
+        <div className="w-full h-full absolute top-0 left-0" style={pixelPatternStyles.sprinkle}></div>
       </div>
     </>
   );
