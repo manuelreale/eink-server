@@ -36,8 +36,8 @@ export default function EInkCalendar() {
           >
             <div className="flex items-center justify-center w-full h-full">
               <div
-                className="pixel-corners-5px--wrapper"
-                style={{ width: "60%", maxWidth: 400, "--pixel-corner-fill": "#fff" }}
+                className="pixel-corners-5px--wrapper pixel-corner-fill-white"
+                style={{ width: "60%", maxWidth: 400 }}
               >
                 <div
                   className="pixel-corners-5px w-full h-full p-6"

@@ -327,3 +327,7 @@
 .pixel-corners-5px::after {
   margin: -1px;
 }
+
+.pixel-corner-fill-white {
+  --pixel-corner-fill: #fff;
+}
