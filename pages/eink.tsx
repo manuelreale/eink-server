@@ -7,7 +7,6 @@ export default function EInkCalendar() {
   const sprinklePattern = React.useMemo<React.CSSProperties>(
     () => ({
       ...pixelPatternStyles.sprinkle,
-      "--pixel-corner-fill": "#f5f5f5",
     }),
     []
   );
@@ -15,7 +14,6 @@ export default function EInkCalendar() {
   const checkerPattern = React.useMemo<React.CSSProperties>(
     () => ({
       ...pixelPatternStyles.checker,
-      "--pixel-corner-fill": "#111111",
     }),
     []
   );
@@ -34,15 +32,15 @@ export default function EInkCalendar() {
           style={{ width: "100%", height: "100%" }}
         >
           <div
-            className="pixel-corners-5px w-full h-full relative"
+            className="pixel-corners-10px w-full h-full relative"
           >
             <div className="flex items-center justify-center w-full h-full">
               <div
                 className="pixel-corners-5px--wrapper"
-                style={{ width: "60%", maxWidth: 400 }}
+                style={{ width: "60%", maxWidth: 400, "--pixel-corner-fill": "#fff" }}
               >
                 <div
-                  className="pixel-corners-10px w-full h-full p-6"
+                  className="pixel-corners-5px w-full h-full p-6"
                   style={sprinklePattern}
                 >
                   <p className="text-sm tracking-wide uppercase">
