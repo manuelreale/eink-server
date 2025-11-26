@@ -35,16 +35,15 @@ export default function EInkCalendar() {
         >
           <div
             className="pixel-corners-10px w-full h-full relative"
-            style={sprinklePattern}
           >
             <div className="flex items-center justify-center w-full h-full">
               <div
-                className="pixel-corners-5px--wrapper"
+                className="pixel-corners-10px--wrapper"
                 style={{ width: "60%", maxWidth: 400 }}
               >
                 <div
-                  className="pixel-corners-5px w-full h-full p-6"
-                  style={checkerPattern}
+                  className="pixel-corners-10px w-full h-full p-6"
+                  style={sprinklePattern}
                 >
                   <p className="text-sm tracking-wide uppercase">
                     Nested box using the 5px corner style

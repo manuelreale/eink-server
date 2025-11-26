@@ -51,7 +51,7 @@ const PATTERNS: Record<string, PatternConfig> = {
       [0, "#000", 0],
       [0, 0, "#000"],
     ],
-    zoom: 3,
+    zoom: 1,
   },
 };
 
