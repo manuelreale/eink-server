@@ -25,6 +25,14 @@ export default function EInkCalendar() {
     []
   );
 
+  const checkerPattern = React.useMemo<React.CSSProperties>(
+    () => ({
+      ...pixelPatternStyles.checker,
+      "--pixel-corner-fill": "#111111",
+    }),
+    []
+  );
+
   const cornerVariant: CornerVariant = "large";
   const { wrapper, inner } = CORNER_VARIANTS[cornerVariant];
 
@@ -42,9 +50,25 @@ export default function EInkCalendar() {
           style={{ width: "100%", height: "100%" }}
         >
           <div
-            className={`${inner} w-full h-full`}
+            className={`${inner} w-full h-full relative`}
             style={sprinklePattern}
-          ></div>
+          >
+            <div className="flex items-center justify-center w-full h-full">
+              <div
+                className="pixel-corners-5--wrapper"
+                style={{ width: "60%", maxWidth: 400 }}
+              >
+                <div
+                  className="pixel-corners-5 w-full h-full p-6"
+                  style={checkerPattern}
+                >
+                  <p className="text-sm tracking-wide uppercase">
+                    Nested box using the 5px corner style
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
