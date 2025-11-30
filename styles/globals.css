@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "CalendarNumerals";
+  src: url("/CalendarNumerals.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@layer utilities {
+  .text-outline-white {
+    color: black;
+    text-shadow: 
+      -1px 0 0 white, 1px 0 0 white, 0 -1px 0 white, 0 1px 0 white,
+      -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+  }
+}
+
 .pixel-corners-10px,
 .pixel-corners-10px--wrapper {
   clip-path: polygon(0px calc(100% - 7px),
