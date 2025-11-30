@@ -64,8 +64,10 @@ export default async function handler(
     const proto =
       (req.headers["x-forwarded-proto"] as string | undefined) || "https";
     const host = req.headers.host;
-    // const pageUrl = `https://en.wikipedia.org/wiki/Special:Random`;
-    const pageUrl = `${proto}://${host}/eink`;
+    
+    // Get page name from query parameter, default to 'eink'
+    const pageName = (req.query.page as string) || "eink";
+    const pageUrl = `${proto}://${host}/${pageName}`;
 
     await page.goto(pageUrl, { waitUntil: "networkidle0" });
 
@@ -74,15 +76,26 @@ export default async function handler(
       type: "png",
     })) as Buffer;
 
+    // Check for rotation parameter (180 for upside down)
+    const rotation = req.query.rotate === "180" ? 180 : 0;
+
     // Debug view in browser: /api/frame.bin?debug=1
     if (req.query.debug === "1") {
+      let debugBuffer = pngBuffer;
+      if (rotation === 180) {
+        debugBuffer = await sharp(pngBuffer).rotate(180).toBuffer();
+      }
       res.setHeader("Content-Type", "image/png");
-      res.status(200).send(pngBuffer);
+      res.status(200).send(debugBuffer);
       return;
     }
 
-    // PNG → raw RGBA
-    const { data, info } = await sharp(pngBuffer)
+    // PNG → raw RGBA (with optional rotation)
+    let sharpPipeline = sharp(pngBuffer);
+    if (rotation === 180) {
+      sharpPipeline = sharpPipeline.rotate(180);
+    }
+    const { data, info } = await sharpPipeline
       .resize(WIDTH, HEIGHT, { fit: "cover" })
       .ensureAlpha()
       .raw()
