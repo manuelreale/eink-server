@@ -33,7 +33,7 @@ export default function EInkCalendar() {
       </Head>
 
       <div className="w-[960px] h-[680px] absolute top-0 left-0">
-        <img src="/img2.png" className="w-full h-full absolute top-0 left-0 z-10" />
+        {/* <img src="/img2.png" className="w-full h-full absolute top-0 left-0 z-10" /> */}
         <div
           className="pixel-corners-10px--wrapper absolute inset-0"
           style={{ width: "100%", height: "100%" }}
