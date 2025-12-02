@@ -12,9 +12,75 @@
 @layer utilities {
   .text-outline-white {
     color: black;
-    text-shadow: 
+    text-shadow:
       -1px 0 0 white, 1px 0 0 white, 0 -1px 0 white, 0 1px 0 white,
       -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white;
+  }
+
+  .calendar-cell {
+    position: relative;
+    color: black;
+    --calendar-line-color: #000;
+    --calendar-top: 0;
+    --calendar-left: 0;
+  }
+
+  .calendar-cell--top {
+    --calendar-top: 1;
+  }
+
+  .calendar-cell--left {
+    --calendar-left: 1;
+  }
+
+  .calendar-cell::after,
+  .calendar-cell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .calendar-cell::after {
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        var(--calendar-line-color) 0 1px,
+        transparent 1px 2px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--calendar-line-color) 0 1px,
+        transparent 1px 2px
+      );
+    background-size:
+      100% 1px,
+      1px 100%;
+    background-position:
+      bottom left,
+      top right;
+    background-repeat: no-repeat;
+  }
+
+  .calendar-cell::before {
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        var(--calendar-line-color) 0 1px,
+        transparent 1px 2px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        var(--calendar-line-color) 0 1px,
+        transparent 1px 2px
+      );
+    background-size:
+      100% calc(var(--calendar-top) * 1px),
+      calc(var(--calendar-left) * 1px) 100%;
+    background-position:
+      top left,
+      top left;
+    background-repeat: no-repeat;
   }
 }
 
