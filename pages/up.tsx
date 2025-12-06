@@ -35,7 +35,7 @@ export default function EInkCalendar() {
           <div className="text-center font-jersey25 text-[41px] h-[41px]">
             Sunday
           </div>
-          <div className="text-left font-jacquarda-bastarda-9 text-[13px] w-[149px] h-[150px] leading-[17px] mt-[8px]">
+          <div className="text-left font-jacquarda-bastarda-9 text-[13px] w-[148px] h-[150px] leading-[17px] mt-[8px]">
           December 1 is the 335th day of the year (336th in leap years) in the Gregorian calendar; 30 days remain until the end of the year.
           </div>
         </div>
