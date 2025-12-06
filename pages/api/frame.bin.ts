@@ -79,17 +79,6 @@ export default async function handler(
     // Check for rotation parameter (180 for upside down)
     const rotation = req.query.rotate === "180" ? 180 : 0;
 
-    // Debug view in browser: /api/frame.bin?debug=1
-    if (req.query.debug === "1") {
-      let debugBuffer = pngBuffer;
-      if (rotation === 180) {
-        debugBuffer = await sharp(pngBuffer).rotate(180).toBuffer();
-      }
-      res.setHeader("Content-Type", "image/png");
-      res.status(200).send(debugBuffer);
-      return;
-    }
-
     // PNG → raw RGBA (with optional rotation)
     let sharpPipeline = sharp(pngBuffer);
     if (rotation === 180) {
@@ -100,6 +89,56 @@ export default async function handler(
       .ensureAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
+
+    // Debug view in browser: /api/frame.bin?debug=1
+    if (req.query.debug === "1") {
+      // Create a pixelated representation with only white, black, and red
+      const debugData = Buffer.alloc(WIDTH * HEIGHT * 4);
+      let idx = 0;
+      let debugIdx = 0;
+      
+      for (let y = 0; y < info.height; y++) {
+        for (let x = 0; x < info.width; x++) {
+          const r = data[idx];
+          const g = data[idx + 1];
+          const b = data[idx + 2];
+          idx += 4;
+
+          const color = classifyPixel(r, g, b);
+          
+          // Set pixel to pure white, black, or red
+          if (color === "red") {
+            debugData[debugIdx] = 255;     // R
+            debugData[debugIdx + 1] = 0;   // G
+            debugData[debugIdx + 2] = 0;   // B
+          } else if (color === "black") {
+            debugData[debugIdx] = 0;       // R
+            debugData[debugIdx + 1] = 0;   // G
+            debugData[debugIdx + 2] = 0;   // B
+          } else { // white
+            debugData[debugIdx] = 255;     // R
+            debugData[debugIdx + 1] = 255; // G
+            debugData[debugIdx + 2] = 255; // B
+          }
+          debugData[debugIdx + 3] = 255;   // A
+          debugIdx += 4;
+        }
+      }
+
+      const debugBuffer = await sharp(debugData, {
+        raw: {
+          width: WIDTH,
+          height: HEIGHT,
+          channels: 4,
+        },
+      })
+        .png()
+        .toBuffer();
+
+      res.setHeader("Content-Type", "image/png");
+      res.status(200).send(debugBuffer);
+      return;
+    }
 
     const blackPlane = new Uint8Array(BYTES_PER_PLANE);
     const redPlane = new Uint8Array(BYTES_PER_PLANE);

@@ -6,7 +6,13 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'noto-sans-jp': ['"Noto Sans JP"', 'sans-serif'],
+        'jersey25': ['"Jersey 25"', 'sans-serif'],
+        'jacquarda-bastarda-9': ['"Jacquarda Bastarda 9"', 'serif'],
+      },
+    },
   },
   plugins: [],
 }

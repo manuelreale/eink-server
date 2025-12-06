@@ -24,42 +24,46 @@ export default function EInkCalendar() {
       <Head>
         <meta charSet="utf-8" />
         <title>E-Ink Calendar</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap"
-          rel="stylesheet"
-        />
       </Head>
 
-      <div className="w-[960px] h-[680px] absolute top-0 left-0">
-        <img src="/top2.png" className="w-full h-full absolute top-0 left-0 z-10" />
-        <div
-          className="pixel-corners-10px--wrapper absolute inset-0"
-          style={{ width: "100%", height: "100%" }}
-        >
-          <div className="pixel-corners-10px w-full h-full relative p-8">
-            <div className="grid grid-rows-10 w-full h-full">
-              {PATTERN_NAMES.map((patternName) => (
-                <Card
-                  key={patternName}
-                  patternStyle={pixelPatternStyles[patternName]}
-                  cornerSize="5px"
-                  cornerFill="black"
-                  className="p-4 flex items-center justify-center"
-                >
-                  <p
-                    className="text-center text-black text-outline-white"
-                    style={{ fontFamily: "'Silkscreen', monospace", fontSize: "8px" }}
-                  >
-                    {patternName}
-                  </p>
-                </Card>
-              ))}
-            </div>
+      <div className="w-[960px] h-[680px] absolute top-0 left-0 flex flex-row">
+        <img src="/top2.png" className="w-full h-full absolute top-0 left-0 z-10 opacity-0" style={{ imageRendering: "pixelated" }}/>
+        <div className="pixel-corners-10px w-1/4 h-full relative p-[16px] gap-[8px] flex flex-col items-center justify-top">
+          <div className="text-center font-noto-sans-jp leading-[1.02] font-bold text-[91px] w-[60%]">
+            土曜日
+          </div>
+          <div className="text-center font-jersey25 text-[41px]">
+            Sunday
+          </div>
+          <div className="text-center font-jacquarda-bastarda-9 text-[13px] w-[80%] h-[120px] leading-[1.3]">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </div>
         </div>
+        <div className="pixel-corners-10px w-1/2 h-full relative p-8"></div>
+        <div className="pixel-corners-10px w-1/4 h-full relative p-8"></div>
       </div>
     </>
   );
 }
+
+
+
+
+{/* <div className="grid grid-rows-10 w-full h-full">
+{PATTERN_NAMES.map((patternName) => (
+  <Card
+    key={patternName}
+    patternStyle={pixelPatternStyles[patternName]}
+    cornerSize="5px"
+    cornerFill="black"
+    className="p-4 flex items-center justify-center"
+  >
+    <p
+      className="text-center text-black text-outline-white"
+      style={{ fontFamily: "'Silkscreen', monospace", fontSize: "8px" }}
+    >
+      {patternName}
+    </p>
+  </Card>
+))}
+</div> */}
