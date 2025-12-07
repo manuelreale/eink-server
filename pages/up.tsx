@@ -88,7 +88,7 @@ export default function EInkCalendar() {
           <div className="text-left font-jacquarda-bastarda-9 text-[13px] w-[148px] h-[150px] leading-[17px] mt-[8px]">
           December 1 is the 335th day of the year (336th in leap years) in the Gregorian calendar; 30 days remain until the end of the year.
           </div>
-          <div className="pixel-corners-10px w-[160px] h-full my-[8px] p-[8px] py-[0px] flex flex-col">
+          <div className="pixel-corners-10px w-[160px] h-full my-[8px] py-[0px] pl-[16px] pr-[6px] flex flex-col">
             <div className="font-jersey10 text-[18.66px] text-center mb-2">
               {monthNames[nextMonth]}
             </div>
@@ -97,9 +97,9 @@ export default function EInkCalendar() {
               {dayLetters.map((letter, idx) => (
                 <div
                   key={idx}
-                  className="font-silkscreen font-bold text-[8px] text-center"
+                  className="font-silkscreen font-bold text-[8px] text-left"
                   style={{
-                    letterSpacing: "-12.5%",
+                    letterSpacing: "-1px",
                     ...(idx >= 5 ? { color: "rgb(255, 0, 0)" } : {}),
                   }}
                 >
@@ -113,7 +113,7 @@ export default function EInkCalendar() {
                   return (
                     <div
                       key={cellKey}
-                      className={`font-silkscreen text-[8px] text-center ${
+                      className={`font-silkscreen text-[8px] text-left ${
                         day.isCurrentMonth
                           ? day.isWeekend
                             ? ""
