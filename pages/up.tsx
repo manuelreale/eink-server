@@ -89,7 +89,7 @@ export default function EInkCalendar() {
           December 1 is the 335th day of the year (336th in leap years) in the Gregorian calendar; 30 days remain until the end of the year.
           </div>
           <div className="pixel-corners-10px w-[160px] h-full my-[8px] py-[0px] pl-[14px] pr-[4px] flex flex-col">
-            <div className="font-jersey10 text-[18.66px] text-center mb-2">
+            <div className="font-jersey10 text-[18.66px] text-center mb-[4px] mt-[4px] mr-[1px]">
               {monthNames[nextMonth]}
             </div>
             <div className="grid grid-cols-7 gap-0 flex-1">
