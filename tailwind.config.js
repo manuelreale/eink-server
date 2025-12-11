@@ -14,6 +14,7 @@ module.exports = {
         'jacquarda-bastarda-9': ['"Jacquarda Bastarda 9"', 'serif'],
         'calendar-numerals': ['CalendarNumerals', 'sans-serif'],
         'silkscreen': ['Silkscreen', 'monospace'],
+        'anybody': ['Anybody', 'sans-serif'],
       },
     },
   },

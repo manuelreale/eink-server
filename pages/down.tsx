@@ -54,7 +54,7 @@ export default function DownCalendar() {
   const activeWeekIndex =
     currentWeekIndex === -1 ? visibleWeeks.length - 1 : currentWeekIndex;
   const rowHeights = visibleWeeks.map((_, index) =>
-    index === activeWeekIndex ? "2fr" : "1fr"
+    index === activeWeekIndex ? "3fr" : "1fr"
   );
   const gridTemplateRows = rowHeights.join(" ");
 
@@ -70,87 +70,88 @@ export default function DownCalendar() {
           className="pixel-corners-10px--wrapper absolute inset-0"
           style={{ width: "100%", height: "100%" }}
         >
-          <div className="pixel-corners-10px w-full h-full p-6 flex flex-col gap-4">
+          <div
+            className="pixel-corners-10px w-full h-full overflow-hidden"
+            style={{
+              display: "grid",
+              gridTemplateRows: "auto 1fr",
+            }}
+          >
             <div className="grid grid-cols-7">
               {WEEKDAY_LABELS.map((label, index) => {
                 const isWeekend = index >= 5;
                 const cellStyle: React.CSSProperties = {
-                  ...(isWeekend ? pixelPatternStyles.red10 : {}),
+                  ...(isWeekend ? pixelPatternStyles.red10 : pixelPatternStyles.grey10),
                   ...jerseyFontStyle,
                   color: isWeekend ? "#cc0000" : "#000",
+                  textShadow:
+                    "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
                 };
-                (cellStyle as React.CSSProperties & {
-                  ["--calendar-line-color"]?: string;
-                })["--calendar-line-color"] = "#000";
+                (cellStyle as any)["--calendar-line-color"] = "#000";
+
                 const headerClasses = [
                   "calendar-cell",
-                  "text-center",
-                  "py-2",
+                  "text-left",
+                  "p-[8px]",
                   "calendar-cell--top",
                 ];
-                if (index === 0) {
-                  headerClasses.push("calendar-cell--left");
-                }
+                if (index === 0) headerClasses.push("calendar-cell--left");
+
                 return (
-                  <div
-                    key={label}
-                    className={headerClasses.join(" ")}
-                    style={cellStyle}
-                  >
+                  <div key={label} className={headerClasses.join(" ")} style={cellStyle}>
                     {label}
                   </div>
                 );
               })}
             </div>
 
-            <div className="flex-2">
-              <div
-                className="grid w-full h-full"
-                style={{
-                  gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                  gridTemplateRows,
-                }}
-              >
-                {visibleWeeks.map((week, rowIndex) =>
-                  week.map((day, colIndex) => {
-                    const weekendStyle: React.CSSProperties = {
-                      ...(day.isWeekend ? pixelPatternStyles.red10 : {}),
-                    };
-                    (
-                      weekendStyle as React.CSSProperties & {
-                        ["--calendar-line-color"]?: string;
-                      }
-                    )["--calendar-line-color"] = "#000";
-                    const cellClasses = [
-                      "calendar-cell",
-                      "box-border",
-                      "p-3",
-                      "flex",
-                      "flex-col",
-                      "justify-start",
-                    ];
-                    if (colIndex === 0) {
-                      cellClasses.push("calendar-cell--left");
-                    }
-                    return (
-                      <div
-                        key={day.iso}
-                        className={cellClasses.join(" ")}
-                        style={weekendStyle}
+            <div
+              className="grid w-full h-full min-h-0"
+              style={{
+                gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+                gridTemplateRows,
+              }}
+            >
+              {visibleWeeks.map((week, rowIndex) =>
+                week.map((day, colIndex) => {
+                  const weekendStyle: React.CSSProperties = {
+                    ...(day.isWeekend ? pixelPatternStyles.red1 : {}),
+                    textShadow:
+                      "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
+                  };
+                  (weekendStyle as any)["--calendar-line-color"] = "#000";
+
+                  const cellClasses = [
+                    "calendar-cell",
+                    "box-border",
+                    "p-[8px]",
+                    "flex",
+                    "flex-col",
+                    "justify-start",
+                  ];
+                  if (colIndex === 0) cellClasses.push("calendar-cell--left");
+
+                  return (
+                    <div
+                      key={day.iso}
+                      className={cellClasses.join(" ")}
+                      style={{
+                        ...weekendStyle,
+                        ...(day.isToday ? { border: "2px solid red" } : {}),
+                      }}
+                    >
+                      <span
+                        className={`block ${
+                          day.isWeekend ? "text-red-600" : "text-black"
+                        } ${day.isCurrentMonth ? "" : "opacity-0"}`}
+                        style={jerseyFontStyle}
                       >
-                        <span
-                          className={`block ${
-                            day.isWeekend ? "text-red-600" : "text-black"
-                          } ${day.isCurrentMonth ? "" : "opacity-40"}`}
-                          style={jerseyFontStyle}
-                        >
-                          {day.date.getDate()}
-                        </span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+                        {day.date.getDate()}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
