@@ -8,6 +8,12 @@ const jerseyFontStyle = {
   fontSize: "18.66px",
 };
 
+type CalendarEvent = {
+  dateISO: string; // e.g. "2025-01-09"
+  title: string;
+  pattern?: keyof typeof pixelPatternStyles;
+};
+
 type DayCell = {
   date: Date;
   iso: string;
@@ -58,6 +64,46 @@ export default function DownCalendar() {
   );
   const gridTemplateRows = rowHeights.join(" ");
 
+  const [events, setEvents] = React.useState<CalendarEvent[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/events");
+        if (!res.ok) throw new Error("Failed to load events");
+        const data = await res.json();
+        if (mounted && Array.isArray(data.events)) {
+          setEvents(
+            data.events.map((ev: any) => ({
+              dateISO: ev.dateISO,
+              title: ev.title,
+              pattern: ev.pattern as keyof typeof pixelPatternStyles | undefined,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Group events by ISO date for quick lookup per cell.
+  const eventsByISO = React.useMemo(() => {
+    const map: Record<string, CalendarEvent[]> = {};
+    events.forEach((event) => {
+      if (!map[event.dateISO]) map[event.dateISO] = [];
+      map[event.dateISO].push(event);
+    });
+    return map;
+  }, [events]);
+
   return (
     <>
       <Head>
@@ -65,7 +111,7 @@ export default function DownCalendar() {
         <title>E-Ink Calendar</title>
       </Head>
 
-      <div className="w-[960px] h-[680px] absolute top-0 left-0">
+      <div className="w-[960px] h-[680px] absolute top-0 left-0 px-[3px] py-[2px]">
         <div
           className="pixel-corners-10px--wrapper absolute inset-0"
           style={{ width: "100%", height: "100%" }}
@@ -92,14 +138,22 @@ export default function DownCalendar() {
                 const headerClasses = [
                   "calendar-cell",
                   "text-left",
-                  "p-[8px]",
+                  "px-[8px]",
+                  "py-[8px]",
                   "calendar-cell--top",
+                  "calendar-cell--solid",
                 ];
                 if (index === 0) headerClasses.push("calendar-cell--left");
 
                 return (
                   <div key={label} className={headerClasses.join(" ")} style={cellStyle}>
-                    {label}
+                    <div
+                      className="calendar-fill"
+                      style={isWeekend ? pixelPatternStyles.red10 : pixelPatternStyles.grey10}
+                    />
+                    <div className="relative z-[1]">
+                      {label}
+                    </div>
                   </div>
                 );
               })}
@@ -114,17 +168,20 @@ export default function DownCalendar() {
             >
               {visibleWeeks.map((week, rowIndex) =>
                 week.map((day, colIndex) => {
-                  const weekendStyle: React.CSSProperties = {
-                    ...(day.isWeekend ? pixelPatternStyles.red1 : {}),
+                  const patternStyle: React.CSSProperties = day.isWeekend
+                    ? pixelPatternStyles.red1
+                    : {};
+                  const textShadowStyle: React.CSSProperties = {
                     textShadow:
                       "-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff",
                   };
-                  (weekendStyle as any)["--calendar-line-color"] = "#000";
 
                   const cellClasses = [
                     "calendar-cell",
                     "box-border",
-                    "p-[8px]",
+                    "px-[8px]",
+                    "py-[2px]",
+                    "pb-[8px]",
                     "flex",
                     "flex-col",
                     "justify-start",
@@ -136,18 +193,40 @@ export default function DownCalendar() {
                       key={day.iso}
                       className={cellClasses.join(" ")}
                       style={{
-                        ...weekendStyle,
                         ...(day.isToday ? { border: "2px solid red" } : {}),
+                        ["--calendar-line-color" as any]: "#000",
                       }}
                     >
-                      <span
-                        className={`block ${
-                          day.isWeekend ? "text-red-600" : "text-black"
-                        } ${day.isCurrentMonth ? "" : "opacity-0"}`}
-                        style={jerseyFontStyle}
+                      <div className="calendar-fill" style={patternStyle} />
+                      <div
+                        className="relative z-[1] flex h-full flex-col gap-[2px]"
+                        style={textShadowStyle}
                       >
-                        {day.date.getDate()}
-                      </span>
+                        <span
+                          className={`block ${
+                            day.isWeekend ? "text-red-600" : "text-black"
+                          } ${day.isCurrentMonth ? "" : "opacity-0"}`}
+                          style={jerseyFontStyle}
+                        >
+                          {day.date.getDate()}
+                        </span>
+                        <div className="mt-auto flex flex-col gap-[2px]">
+                          {(eventsByISO[day.iso] ?? []).map((event, idx) => {
+                            const pattern =
+                              (event.pattern && pixelPatternStyles[event.pattern]) ||
+                              pixelPatternStyles.grey25;
+                            return (
+                              <div
+                                key={`${event.dateISO}-${idx}`}
+                                className="pixel-corners-5px calendar-pill"
+                                style={pattern}
+                              >
+                                {event.title}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   );
                 })
