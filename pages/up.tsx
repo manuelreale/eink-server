@@ -126,7 +126,7 @@ export default function EInkCalendar() {
       </Head>
 
       <div className="w-[960px] h-[680px] absolute top-0 left-0 flex flex-row">
-        <img src="/top2.png" className="w-full h-full absolute top-0 left-0 z-10 opacity-0" style={{ imageRendering: "pixelated" }}/>
+        <img src="/img3.png" className="w-full h-full absolute top-0 left-0 z-10 opacity-100" style={{ imageRendering: "pixelated" }}/>
         <div className="pixel-corners-10px w-1/4 h-full relative p-[16px] gap-[16px] flex flex-col items-center justify-top">
           <div className="text-center font-noto-sans-jp leading-[1.02] font-bold text-[91px] w-[60%] h-[273px]">
             {todayDayNameJP}
