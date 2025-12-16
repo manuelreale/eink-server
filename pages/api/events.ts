@@ -23,24 +23,13 @@ function getWindow() {
 }
 
 function parseICSDate(value: string): string | null {
-  // DATE (all-day): YYYYMMDD
-  if (/^\d{8}$/.test(value)) {
-    const year = Number(value.slice(0, 4));
-    const month = Number(value.slice(4, 6)) - 1;
-    const day = Number(value.slice(6, 8));
-    const d = new Date(Date.UTC(year, month, day));
-    return d.toISOString().split("T")[0];
-  }
-  // DATE-TIME: YYYYMMDDTHHMMSSZ (we only need the date part)
-  const match = value.match(/^(\d{4})(\d{2})(\d{2})T/);
-  if (match) {
-    const year = Number(match[1]);
-    const month = Number(match[2]) - 1;
-    const day = Number(match[3]);
-    const d = new Date(Date.UTC(year, month, day));
-    return d.toISOString().split("T")[0];
-  }
-  return null;
+  // Take the first 8 digits as the calendar day and avoid timezone shifts.
+  const datePart = value.slice(0, 8);
+  if (!/^\d{8}$/.test(datePart)) return null;
+  const year = datePart.slice(0, 4);
+  const month = datePart.slice(4, 6);
+  const day = datePart.slice(6, 8);
+  return `${year}-${month}-${day}`;
 }
 
 function parseICS(ics: string, windowStart: string, windowEnd: string): CalendarEvent[] {

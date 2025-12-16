@@ -8,6 +8,13 @@ const jerseyFontStyle = {
   fontSize: "18.66px",
 };
 
+const formatDate = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
 type CalendarEvent = {
   dateISO: string; // e.g. "2025-01-09"
   title: string;
@@ -20,11 +27,12 @@ type DayCell = {
   isCurrentMonth: boolean;
   isToday: boolean;
   isWeekend: boolean;
+  isHoliday?: boolean;
 };
 
 export default function DownCalendar() {
   const today = new Date();
-  const todayISO = today.toISOString().split("T")[0];
+  const todayISO = formatDate(today);
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
 
@@ -36,7 +44,7 @@ export default function DownCalendar() {
   const allDays: DayCell[] = Array.from({ length: totalCells }, (_, index) => {
     const cellDate = new Date(startDate);
     cellDate.setDate(startDate.getDate() + index);
-    const iso = cellDate.toISOString().split("T")[0];
+    const iso = formatDate(cellDate);
     const jsDay = cellDate.getDay();
     const isWeekend = jsDay === 0 || jsDay === 6;
     return {
@@ -65,23 +73,48 @@ export default function DownCalendar() {
   const gridTemplateRows = rowHeights.join(" ");
 
   const [events, setEvents] = React.useState<CalendarEvent[]>([]);
+  const [holidays, setHolidays] = React.useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = React.useState(true);
+
+  // Mark holidays
+  weeks.forEach((week) =>
+    week.forEach((day) => {
+      if (holidays[day.iso]) {
+        day.isHoliday = true;
+      }
+    })
+  );
 
   React.useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch("/api/events");
-        if (!res.ok) throw new Error("Failed to load events");
-        const data = await res.json();
-        if (mounted && Array.isArray(data.events)) {
+        const [eventsRes, holidaysRes] = await Promise.all([
+          fetch("/api/events"),
+          fetch("/api/holidays"),
+        ]);
+        if (!eventsRes.ok) throw new Error("Failed to load events");
+        if (!holidaysRes.ok) throw new Error("Failed to load holidays");
+
+        const eventsData = await eventsRes.json();
+        const holidaysData = await holidaysRes.json();
+
+        if (mounted && Array.isArray(eventsData.events)) {
           setEvents(
-            data.events.map((ev: any) => ({
+            eventsData.events.map((ev: any) => ({
               dateISO: ev.dateISO,
               title: ev.title,
               pattern: ev.pattern as keyof typeof pixelPatternStyles | undefined,
             }))
           );
+        }
+
+        if (mounted && Array.isArray(holidaysData.holidays)) {
+          const holidayMap: Record<string, string> = {};
+          holidaysData.holidays.forEach((h: any) => {
+            if (h.date) holidayMap[h.date] = h.name || h.localName || "Holiday";
+          });
+          setHolidays(holidayMap);
         }
       } catch (err) {
         console.error(err);
@@ -168,7 +201,8 @@ export default function DownCalendar() {
             >
               {visibleWeeks.map((week, rowIndex) =>
                 week.map((day, colIndex) => {
-                  const patternStyle: React.CSSProperties = day.isWeekend
+                  const isFestive = day.isWeekend || day.isHoliday;
+                  const patternStyle: React.CSSProperties = isFestive
                     ? pixelPatternStyles.red1
                     : {};
                   const textShadowStyle: React.CSSProperties = {
@@ -204,13 +238,26 @@ export default function DownCalendar() {
                       >
                         <span
                           className={`block ${
-                            day.isWeekend ? "text-red-600" : "text-black"
+                            day.isWeekend || day.isHoliday ? "text-red-600" : "text-black"
                           } ${day.isCurrentMonth ? "" : "opacity-0"}`}
                           style={jerseyFontStyle}
                         >
                           {day.date.getDate()}
                         </span>
                         <div className="mt-auto flex flex-col gap-[2px]">
+                          {day.isHoliday && holidays[day.iso] && (
+                            <div
+                              className="pixel-corners-5px pixel-corner-fill-red calendar-pill"
+                              style={{
+                                ...pixelPatternStyles.red10,
+                                color: "#cc0000",
+                              }}
+                            >
+                              <span className="bg-white px-[1px]">
+                                {holidays[day.iso]}
+                              </span>
+                            </div>
+                          )}
                           {(eventsByISO[day.iso] ?? []).map((event, idx) => {
                             const pattern =
                               (event.pattern && pixelPatternStyles[event.pattern]) ||
@@ -221,7 +268,9 @@ export default function DownCalendar() {
                                 className="pixel-corners-5px calendar-pill"
                                 style={pattern}
                               >
-                                {event.title}
+                                <span className="bg-white px-[1px]">
+                                  {event.title}
+                                </span>
                               </div>
                             );
                           })}

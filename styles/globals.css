@@ -130,6 +130,9 @@
     text-align: left;
     color: #000;
     margin-top: 2px;
+    white-space: nowrap;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
   }
 
   .calendar-fill {
@@ -472,4 +475,8 @@
 
 .pixel-corner-fill-white {
   --pixel-corner-fill: #fff;
+}
+
+.pixel-corner-fill-red {
+  --pixel-corner-fill: #cc0000;
 }
