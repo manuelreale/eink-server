@@ -1,4 +1,5 @@
 import React from "react";
+import PixelPerfectText from "./PixelPerfectText";
 
 const DAY_LETTERS = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTH_ABBREV = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -40,13 +41,13 @@ export default function YearGrid({ currentYear, today }: YearGridProps) {
     <div className="w-[489px] flex flex-col items-left mt-[6px]">
       <div className="flex items-start shrink-0" style={{ minWidth: YEAR_GRID_DAY_LETTERS_WIDTH + gridWidth }}>
         <div
-          className="flex flex-col justify-around text-left font-tiny5 text-[8px] shrink-0"
-          style={{ width: YEAR_GRID_DAY_LETTERS_WIDTH, height: 7 * cellSize, paddingRight: 4 }}
+          className="flex flex-col text-left font-tiny5 text-[8px] shrink-0"
+          style={{ width: YEAR_GRID_DAY_LETTERS_WIDTH, paddingRight: 4 }}
         >
           {DAY_LETTERS.map((letter, rowIndex) => (
-            <span key={rowIndex} className="leading-none">
+            <PixelPerfectText key={rowIndex} lineHeight={cellSize} className="leading-none" as="div">
               {letter}
-            </span>
+            </PixelPerfectText>
           ))}
         </div>
         <div
@@ -87,11 +88,18 @@ export default function YearGrid({ currentYear, today }: YearGridProps) {
         </div>
       </div>
       <div
-        className="relative mt-[0px] font-tiny5 text-[8px] shrink-0 h-[6px]"
-        style={{ width: gridWidth, minWidth: gridWidth, marginLeft: YEAR_GRID_DAY_LETTERS_WIDTH }}
+        className="relative mt-[0px] font-tiny5 text-[8px] shrink-0"
+        style={{
+          width: gridWidth,
+          minWidth: gridWidth,
+          marginLeft: YEAR_GRID_DAY_LETTERS_WIDTH,
+          lineHeight: "8px",
+          minHeight: 8,
+          padding: 0,
+        }}
       >
         {monthLabelLeftPx.map((leftPx, m) => (
-          <span key={m} className="absolute text-left whitespace-nowrap" style={{ left: leftPx + 1 }}>
+          <span key={m} className="absolute text-left whitespace-nowrap" style={{ left: leftPx + 1, lineHeight: "8px" }}>
             {MONTH_ABBREV[m]}
           </span>
         ))}

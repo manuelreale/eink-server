@@ -1,5 +1,6 @@
 import React from "react";
 import MonthCalendarGrid from "./MonthCalendarGrid";
+import PixelPerfectText from "./PixelPerfectText";
 
 type Rokuyo = { nameDisplay: string; kanji: string; meaning: string } | null;
 
@@ -28,53 +29,51 @@ export default function CalendarColumn({
       <div className="text-center font-calendar-numerals leading-[1.02] font-bold text-[105.5px] w-[80%] h-[100px]">
         {displayMonth + 1}
       </div>
-      <div className="text-center font-jersey25 text-[41px] h-[41px] w-[148px] leading-[41px] pl-[1px]">
+      <PixelPerfectText
+        lineHeight={41}
+        width={148}
+        parentWidth={148}
+        className="text-center font-jersey25 text-[41px]"
+      >
         {monthNames[displayMonth]}
-      </div>
+      </PixelPerfectText>
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
       <div className="text-center font-noto-sans-jp leading-[1.02] font-bold text-[44.5px] w-[80%] h-[32px]">
         {todayDayNameJP}
       </div>
-      <div className="text-center font-jersey25 text-[41px] h-[41px] w-[148px] leading-[41px] pl-[1px]">
+      <PixelPerfectText
+        lineHeight={41}
+        width={148}
+        parentWidth={148}
+        className="text-center font-jersey25 text-[41px]"
+      >
         {todayDayName}
-      </div>
+      </PixelPerfectText>
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
       <div className="flex flex-col items-center w-[148px] mt-[8px]">
-        <div className="font-tiny5 text-[8px] text-center w-full">
+        <PixelPerfectText
+          lineHeight={8}
+          width={148}
+          parentWidth={148}
+          className="font-tiny5 text-[8px] text-center"
+        >
           {rokuyo?.nameDisplay ?? "Rokuyō"}
-        </div>
+        </PixelPerfectText>
         <div className="pixel-corners-5px w-[84px] h-[44px] flex flex-col items-center justify-center pb-[4px] my-[4px]">
           <span className="font-noto-sans-jp font-bold text-[33.5px] leading-none">
             {rokuyo?.kanji ?? "—"}
           </span>
         </div>
-        {/* Pixel-perfect: block at integer (16, y). Each line in a 17px-tall block so line N starts at y = N*17. Use odd container width (115, margins 16/17) if your pixel font has odd character width so each line’s x is integer. */}
-        <div
+        <PixelPerfectText
+          lineHeight={17}
+          width={116}
+          parentWidth={148}
+          multiline
+          text={rokuyo?.meaning ?? undefined}
           className="text-center font-jacquarda-bastarda-9 text-[13px] shrink-0"
-          style={{
-            width: 116,
-            marginLeft: 16,
-            marginRight: 16,
-            paddingTop: 0,
-            paddingBottom: 0,
-          }}
         >
-          {rokuyo?.meaning != null
-            ? rokuyo.meaning.split("\n").map((line, i) => (
-                <div
-                  key={i}
-                  className="leading-none"
-                  style={{ height: 17, lineHeight: "17px" }}
-                >
-                  {line || "\u00A0"}
-                </div>
-              ))
-            : (
-              <div className="leading-none" style={{ height: 17, lineHeight: "17px" }}>
-                —
-              </div>
-            )}
-        </div>
+          {rokuyo?.meaning == null ? "—" : undefined}
+        </PixelPerfectText>
       </div>
       <MonthCalendarGrid
         month={displayMonth}

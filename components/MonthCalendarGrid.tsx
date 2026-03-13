@@ -1,4 +1,5 @@
 import React from "react";
+import PixelPerfectText from "./PixelPerfectText";
 
 const DAY_LETTERS = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -50,9 +51,9 @@ export default function MonthCalendarGrid({
 
   return (
     <div className={`pixel-corners-10px w-[160px] h-[152px] py-[0px] pl-[14px] pr-[4px] flex flex-col ${className}`}>
-      <div className="font-jersey10 text-[18.66px] text-center mb-[2px] mt-[0px] mr-[1px]">
+      <PixelPerfectText lineHeight={19} width={142} className="font-jersey10 text-[18.66px] text-center mb-[2px] mt-[0px] mr-[1px]">
         {title}
-      </div>
+      </PixelPerfectText>
       <div className="grid grid-cols-7 gap-0 flex-1">
         {DAY_LETTERS.map((letter, idx) => (
           <div
@@ -60,6 +61,9 @@ export default function MonthCalendarGrid({
             className="font-silkscreen font-bold text-[8px] text-left"
             style={{
               letterSpacing: "-1px",
+              lineHeight: "8px",
+              height: 8,
+              padding: 0,
               ...(idx >= 5 ? { color: "rgb(255, 0, 0)" } : {}),
             }}
           >
@@ -77,6 +81,9 @@ export default function MonthCalendarGrid({
                 }`}
                 style={{
                   letterSpacing: "-1px",
+                  lineHeight: "8px",
+                  minHeight: 8,
+                  padding: 0,
                   fontWeight: day.isCurrentMonth && day.isHoliday ? "bold" : "normal",
                   ...(day.isCurrentMonth && (day.isWeekend || day.isHoliday)
                     ? { color: "rgb(255, 0, 0)" }

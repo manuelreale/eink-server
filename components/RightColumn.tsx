@@ -1,6 +1,7 @@
 import React from "react";
 import MoonPhaseSvg from "./MoonPhaseSvg";
 import MonthCalendarGrid from "./MonthCalendarGrid";
+import PixelPerfectText from "./PixelPerfectText";
 import { getMoonPhaseNameFromKind, getMoonPhaseShape } from "../lib/moonPhase";
 
 type DayForecast = {
@@ -64,35 +65,39 @@ export default function RightColumn({
       </div>
       {moonDebugDaysOffset !== 0 && (
         <>
-          <div className="font-silkscreen text-[8px] text-center">
+          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] text-center">
             {String(moonViewDate.getDate()).padStart(2, "0")}/{String(moonViewDate.getMonth() + 1).padStart(2, "0")}
-          </div>
-          <div className="font-silkscreen text-[8px] text-center text-gray-500">
+          </PixelPerfectText>
+          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] text-center text-gray-500">
             +{moonDebugDaysOffset} Day{moonDebugDaysOffset !== 1 ? "s" : ""}
-          </div>
+          </PixelPerfectText>
         </>
       )}
-      <div className="font-jersey10 text-[18.66px] text-center">
+      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} className="font-jersey10 text-[18.66px] text-center">
         {getMoonPhaseNameFromKind(getMoonPhaseShape(moonPhasePercent).kind)}
-      </div>
+      </PixelPerfectText>
       <div className="bg-black w-[150px] h-[1px] my-[16px]"> </div>
-      <div className="font-silkscreen text-[8px] font-bold text-left overflow-hidden w-[150px] ">
+      <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden">
         Fact of the day:
-      </div>
-      <div className="font-silkscreen text-[8px] text-left overflow-hidden w-[150px] h-[50px]">
+      </PixelPerfectText>
+      <PixelPerfectText lineHeight={8} width={150} className="font-silkscreen text-[8px] text-left overflow-hidden" style={{ minHeight: 50 }}>
         {factOfTheDay ?? "—"}
-      </div>
+      </PixelPerfectText>
 
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
 
       <div className="w-[150px] flex flex-col items-center my-[16px] mb-[24px]">
-        <div className="font-jersey10 text-[18.66px] text-center w-[100px]">Day Forecast</div>
+        <PixelPerfectText lineHeight={19} width={100} parentWidth={150} className="font-jersey10 text-[18.66px] text-center">
+          Day Forecast
+        </PixelPerfectText>
         <div className="grid grid-cols-3 grid-rows-2 gap-x-[8px] gap-y-[8px] w-[150px] mt-[0px] justify-items-left">
           {(dayForecast?.moments ?? DEFAULT_MOMENTS).map(({ label, icon }) => {
             const iconFile = { sun: "Sun", clouds: "Clouds", rain: "Rain", snow: "Snow" }[icon] ?? "Rain";
             return (
               <div key={label} className="flex flex-col items-left w-[45px]">
-                <span className="font-tiny5 text-[8px]">{label}</span>
+                <PixelPerfectText lineHeight={8} className="font-tiny5 text-[8px]">
+                  {label}
+                </PixelPerfectText>
                 <div className="flex items-center justify-left bg-white">
                   <img
                     src={`/${iconFile}.png`}
@@ -105,11 +110,11 @@ export default function RightColumn({
             );
           })}
         </div>
-        <div className="font-silkscreen text-[8px] flex justify-center mt-[8px] gap-[8px] w-[150px]">
+        <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] flex justify-center mt-[8px] gap-[8px]">
           <span><b>MAX:</b> {dayForecast?.max ?? "—"}°C</span>
           <span><b>AVG:</b> {dayForecast?.avg ?? "—"}°C</span>
           <span><b>MIN:</b> {dayForecast?.min ?? "—"}°C</span>
-        </div>
+        </PixelPerfectText>
       </div>
 
       <div className="mt-[8px]">

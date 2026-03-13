@@ -4,6 +4,7 @@ import { getLunarAgePercent } from "../lib/moonPhase";
 import CalendarColumn from "../components/CalendarColumn";
 import YearGrid from "../components/YearGrid";
 import RightColumn from "../components/RightColumn";
+import PixelPerfectText from "../components/PixelPerfectText";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -158,7 +159,7 @@ export default function EInkCalendar() {
 
         <div className=" w-1/2 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-left">
           <div
-            className="font-anybody font-extrabold text-[72px] h-[80px] leading-[80px]"
+            className="font-anybody font-extrabold text-[72px] h-[80px] leading-[80px] text-center"
             style={{ fontVariationSettings: '"wdth" 150' }}
           >
             {currentYear}
@@ -175,9 +176,14 @@ export default function EInkCalendar() {
             </div>
           </div>
           <div className="w-[489px] mt-[6px] ml-[-12px]">
-            <div className="text-center font-jacquarda-bastarda-9 text-[13px] w-full leading-[17px] text-gray-800">
+            <PixelPerfectText
+              lineHeight={17}
+              width={489}
+              parentWidth={489}
+              className="text-center font-jacquarda-bastarda-9 text-[13px] text-gray-800"
+            >
               {`Today is day ${dayOfYear} of the year, ${daysUntilEndOfYear} days remaining this year - ${(dayOfYear / 365 * 100).toFixed(1)}% complete`}
-            </div>
+            </PixelPerfectText>
             <YearGrid currentYear={currentYear} today={today} />
           </div>
         </div>
