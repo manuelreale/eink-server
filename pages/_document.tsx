@@ -11,6 +11,10 @@ export default function Document() {
           rel="stylesheet"
         />
         <link
+          href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap"
+          rel="stylesheet"
+        />
+        <link
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap"
           rel="stylesheet"
         />

@@ -1,0 +1,8 @@
+<svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="9" height="9" transform="translate(9) rotate(90)" fill="white"/>
+<rect x="2" y="1" width="5" height="1" fill="black"/>
+<rect x="7" y="2" width="1" height="5" fill="black"/>
+<rect x="1" y="2" width="1" height="5" fill="black"/>
+<rect x="2" y="7" width="5" height="1" fill="black"/>
+<path d="M5 5V6H4L4 5H3L3 4L4 4L4 3L5 3V4L6 4V5H5Z" fill="black"/>
+</svg>

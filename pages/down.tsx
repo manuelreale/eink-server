@@ -160,7 +160,7 @@ export default function DownCalendar() {
               {WEEKDAY_LABELS.map((label, index) => {
                 const isWeekend = index >= 5;
                 const cellStyle: React.CSSProperties = {
-                  ...(isWeekend ? pixelPatternStyles.red10 : pixelPatternStyles.grey10),
+                  ...(isWeekend ? pixelPatternStyles.red20 : pixelPatternStyles.grey10),
                   ...jerseyFontStyle,
                   color: isWeekend ? "#cc0000" : "#000",
                   textShadow:
@@ -182,7 +182,7 @@ export default function DownCalendar() {
                   <div key={label} className={headerClasses.join(" ")} style={cellStyle}>
                     <div
                       className="calendar-fill"
-                      style={isWeekend ? pixelPatternStyles.red10 : pixelPatternStyles.grey10}
+                      style={isWeekend ? pixelPatternStyles.red20 : pixelPatternStyles.grey10}
                     />
                     <div className="relative z-[1]">
                       {label}
@@ -203,7 +203,7 @@ export default function DownCalendar() {
                 week.map((day, colIndex) => {
                   const isFestive = day.isWeekend || day.isHoliday;
                   const patternStyle: React.CSSProperties = isFestive
-                    ? pixelPatternStyles.red1
+                    ? pixelPatternStyles.red5
                     : {};
                   const textShadowStyle: React.CSSProperties = {
                     textShadow:
@@ -249,7 +249,7 @@ export default function DownCalendar() {
                             <div
                               className="pixel-corners-5px pixel-corner-fill-red calendar-pill"
                               style={{
-                                ...pixelPatternStyles.red10,
+                                ...pixelPatternStyles.red20,
                                 color: "#cc0000",
                               }}
                             >
