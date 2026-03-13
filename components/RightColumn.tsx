@@ -85,19 +85,19 @@ export default function RightColumn({
 
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
 
-      <div className="w-full flex flex-col items-center my-[16px] mb-[24px]">
+      <div className="w-[150px] flex flex-col items-center my-[16px] mb-[24px]">
         <div className="font-jersey10 text-[18.66px] text-center w-[100px]">Day Forecast</div>
-        <div className="grid grid-cols-3 grid-rows-2 gap-x-[0px] gap-y-[8px] w-[160px] mt-[0px] justify-items-center">
+        <div className="grid grid-cols-3 grid-rows-2 gap-x-[8px] gap-y-[8px] w-[150px] mt-[0px] justify-items-left">
           {(dayForecast?.moments ?? DEFAULT_MOMENTS).map(({ label, icon }) => {
             const iconFile = { sun: "Sun", clouds: "Clouds", rain: "Rain", snow: "Snow" }[icon] ?? "Rain";
             return (
-              <div key={label} className="flex flex-col items-left">
+              <div key={label} className="flex flex-col items-left w-[45px]">
                 <span className="font-tiny5 text-[8px]">{label}</span>
-                <div className="flex items-center justify-center bg-white">
+                <div className="flex items-center justify-left bg-white">
                   <img
                     src={`/${iconFile}.png`}
                     alt=""
-                    className="w-full h-full object-contain"
+                    className="w-[45px] h-[45px] object-contain"
                     style={{ imageRendering: "pixelated" }}
                   />
                 </div>

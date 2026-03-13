@@ -37,7 +37,7 @@ export default function YearGrid({ currentYear, today }: YearGridProps) {
   });
 
   return (
-    <div className="w-full flex flex-col items-center mt-[6px]">
+    <div className="w-[489px] flex flex-col items-left mt-[6px]">
       <div className="flex items-start shrink-0" style={{ minWidth: YEAR_GRID_DAY_LETTERS_WIDTH + gridWidth }}>
         <div
           className="flex flex-col justify-around text-left font-tiny5 text-[8px] shrink-0"

@@ -156,7 +156,7 @@ export default function EInkCalendar() {
           holidays={holidays}
         />
 
-        <div className=" w-1/2 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-center">
+        <div className=" w-1/2 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-left">
           <div
             className="font-anybody font-extrabold text-[72px] h-[80px] leading-[80px]"
             style={{ fontVariationSettings: '"wdth" 150' }}
@@ -174,7 +174,7 @@ export default function EInkCalendar() {
               {today.getDate()}
             </div>
           </div>
-          <div className="mt-[6px]">
+          <div className="w-[489px] mt-[6px] ml-[-12px]">
             <div className="text-center font-jacquarda-bastarda-9 text-[13px] w-full leading-[17px] text-gray-800">
               {`Today is day ${dayOfYear} of the year, ${daysUntilEndOfYear} days remaining this year - ${(dayOfYear / 365 * 100).toFixed(1)}% complete`}
             </div>

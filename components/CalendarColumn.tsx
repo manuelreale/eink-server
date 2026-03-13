@@ -48,15 +48,32 @@ export default function CalendarColumn({
             {rokuyo?.kanji ?? "—"}
           </span>
         </div>
-        <div className="text-center font-jacquarda-bastarda-9 text-[13px] w-full leading-[17px]">
+        {/* Pixel-perfect: block at integer (16, y). Each line in a 17px-tall block so line N starts at y = N*17. Use odd container width (115, margins 16/17) if your pixel font has odd character width so each line’s x is integer. */}
+        <div
+          className="text-center font-jacquarda-bastarda-9 text-[13px] shrink-0"
+          style={{
+            width: 116,
+            marginLeft: 16,
+            marginRight: 16,
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+        >
           {rokuyo?.meaning != null
             ? rokuyo.meaning.split("\n").map((line, i) => (
-                <span key={i}>
-                  {i > 0 && <br />}
-                  {line}
-                </span>
+                <div
+                  key={i}
+                  className="leading-none"
+                  style={{ height: 17, lineHeight: "17px" }}
+                >
+                  {line || "\u00A0"}
+                </div>
               ))
-            : "—"}
+            : (
+              <div className="leading-none" style={{ height: 17, lineHeight: "17px" }}>
+                —
+              </div>
+            )}
         </div>
       </div>
       <MonthCalendarGrid
