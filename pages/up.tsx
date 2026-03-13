@@ -156,7 +156,7 @@ export default function EInkCalendar() {
           holidays={holidays}
         />
 
-        <div className=" w-3/5 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-center">
+        <div className=" w-1/2 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-center">
           <div
             className="font-anybody font-extrabold text-[72px] h-[80px] leading-[80px]"
             style={{ fontVariationSettings: '"wdth" 150' }}

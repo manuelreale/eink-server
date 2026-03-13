@@ -51,7 +51,7 @@ export default function RightColumn({
   };
 
   return (
-    <div className="w-1/5 h-full relative px-[4px] py-[24px] flex flex-col items-center">
+    <div className="w-1/4 h-full relative px-[4px] py-[24px] flex flex-col items-center">
       <div
         className="w-[100px] h-[100px] flex-shrink-0 cursor-pointer select-none"
         role="button"

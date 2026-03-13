@@ -24,7 +24,7 @@ export default function CalendarColumn({
   holidays,
 }: CalendarColumnProps) {
   return (
-    <div className="w-1/5 h-full relative px-[4px] py-[24px] gap-[16px] flex flex-col items-center justify-top">
+    <div className="w-1/4 h-full relative px-[4px] py-[24px] gap-[16px] flex flex-col items-center justify-top">
       <div className="text-center font-calendar-numerals leading-[1.02] font-bold text-[105.5px] w-[80%] h-[100px]">
         {displayMonth + 1}
       </div>
