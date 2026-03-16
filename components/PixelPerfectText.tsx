@@ -67,14 +67,11 @@ export default function PixelPerfectText({
     );
 
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || !containerRef.current || !measureRef.current) return;
-    const outer = containerRef.current.getBoundingClientRect();
+    if (!centerAlignPixelPerfect || !measureRef.current) return;
     const inner = measureRef.current.getBoundingClientRect();
-    const leftRel = inner.left - outer.left;
-    const topRel = inner.top - outer.top;
     setCorrection({
-      x: Math.round(leftRel) - leftRel,
-      y: Math.round(topRel) - topRel,
+      x: Math.round(inner.left) - inner.left,
+      y: Math.round(inner.top) - inner.top,
     });
   }, [centerAlignPixelPerfect, text, children]);
 
