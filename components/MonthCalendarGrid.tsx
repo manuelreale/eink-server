@@ -51,7 +51,7 @@ export default function MonthCalendarGrid({
 
   return (
     <div className={`pixel-corners-10px w-[160px] h-[152px] py-[0px] pl-[14px] pr-[4px] flex flex-col ${className}`}>
-      <PixelPerfectText lineHeight={19} width={142} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center mb-[2px] mt-[0px] mr-[1px]">
+      <PixelPerfectText lineHeight={19} width={142} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center mb-[8px] mt-[6px] mr-[1px]">
         {title}
       </PixelPerfectText>
       <div className="grid grid-cols-7 gap-0 flex-1">

@@ -175,11 +175,11 @@ export default function EInkCalendar() {
                 aria-hidden
               />
             )}
-            <div className="font-calendar-numerals text-[410px] leading-[410px] relative z-10">
+            <div className="font-calendar-numerals text-[410px] leading-[420px] relative z-10">
               {today.getDate()}
             </div>
           </div>
-          <div className="w-[489px] mt-[6px] ml-[-12px]">
+          <div className="w-[489px] mt-[12px] ml-[-12px]">
             <PixelPerfectText
               lineHeight={17}
               width={489}

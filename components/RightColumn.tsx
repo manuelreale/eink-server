@@ -73,10 +73,10 @@ export default function RightColumn({
           </PixelPerfectText>
         </>
       )}
-      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center">
+      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center mb-[24px] mt-[8px]">
         {getMoonPhaseNameFromKind(getMoonPhaseShape(moonPhasePercent).kind)}
       </PixelPerfectText>
-      <div className="bg-black w-[150px] h-[1px] my-[16px]"> </div>
+      <div className="bg-black w-[150px] h-[1px] my-[12px]"> </div>
       <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden">
         Fact of the day:
       </PixelPerfectText>
@@ -86,8 +86,8 @@ export default function RightColumn({
 
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
 
-      <div className="w-[150px] flex flex-col items-center my-[16px] mb-[24px]">
-        <PixelPerfectText lineHeight={19} width={100} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center">
+      <div className="w-[150px] flex flex-col items-start my-[16px] mb-[24px]">
+        <PixelPerfectText lineHeight={19} width={100} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center w-full mb-[6px]">
           Day Forecast
         </PixelPerfectText>
         <div className="grid grid-cols-3 grid-rows-2 gap-x-[8px] gap-y-[8px] w-[150px] mt-[0px] justify-items-left">
@@ -95,7 +95,7 @@ export default function RightColumn({
             const iconFile = { sun: "Sun", clouds: "Clouds", rain: "Rain", snow: "Snow" }[icon] ?? "Rain";
             return (
               <div key={label} className="flex flex-col items-left w-[45px]">
-                <PixelPerfectText lineHeight={8} className="font-tiny5 text-[8px]">
+                <PixelPerfectText lineHeight={8} className="font-tiny5 text-[8px] mb-[2px]">
                   {label}
                 </PixelPerfectText>
                 <div className="flex items-center justify-left bg-white">
@@ -110,13 +110,23 @@ export default function RightColumn({
             );
           })}
         </div>
-        <PixelPerfectText lineHeight={8} width={150} parentWidth={150} centerAlignPixelPerfect className="font-silkscreen text-[8px] flex justify-center mt-[8px] gap-[8px]">
-          <span><b>MAX:</b> {dayForecast?.max ?? "—"}°C</span>
-          <span><b>AVG:</b> {dayForecast?.avg ?? "—"}°C</span>
-          <span><b>MIN:</b> {dayForecast?.min ?? "—"}°C</span>
-        </PixelPerfectText>
+        <div className="grid grid-cols-3 gap-x-[8px] w-[150px] mt-[8px] justify-items-left">
+          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
+            <span className="font-bold">MAX:</span>
+            <span>{dayForecast?.max ?? "—"}°C</span>
+          </div>
+          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
+            <span className="font-bold">AVG:</span>
+            <span>{dayForecast?.avg ?? "—"}°C</span>
+          </div>
+          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
+            <span className="font-bold">MIN:</span>
+            <span>{dayForecast?.min ?? "—"}°C</span>
+          </div>
+        </div>
       </div>
 
+      <div className="flex-1 min-h-0" />
       <div className="mt-[8px]">
         <MonthCalendarGrid
           month={nextMonth}

@@ -79,12 +79,13 @@ export default function CalendarColumn({
           {rokuyo?.meaning == null ? "—" : undefined}
         </PixelPerfectText>
       </div>
+      <div className="flex-1 min-h-0" />
       <MonthCalendarGrid
         month={displayMonth}
         year={displayMonthYear}
         holidays={holidays}
         title={monthNames[displayMonth]}
-        className="my-[8px]"
+        className="mt-[8px]"
       />
     </div>
   );
