@@ -41,81 +41,42 @@ export default function PixelPerfectText({
   as: Tag = "div",
 }: PixelPerfectTextProps) {
   const containerRef = useRef<HTMLElement>(null);
-  const measureRef = useRef<HTMLSpanElement>(null);
-  const [corrections, setCorrections] = useState<{ x: number; y: number }[] | null>(null);
+  const measureRef = useRef<HTMLElement>(null);
+  const [correction, setCorrection] = useState<{ x: number; y: number } | null>(null);
 
   const lineHeightPx = `${lineHeight}px`;
   const lines = text !== undefined && multiline ? text.split("\n") : null;
 
   const content =
     text !== undefined ? (
-      multiline ? (
-        centerAlignPixelPerfect && lines ? (
-          lines.map((line, i) => (
-            <div
-              key={i}
-              className="leading-none"
-              style={{ height: lineHeightPx, lineHeight: lineHeightPx, textAlign: "center" }}
-            >
-              <span
-                data-line
-                style={{
-                  display: "inline-block",
-                  ...(corrections?.[i] != null
-                    ? { transform: `translate(${corrections[i].x}px, ${corrections[i].y}px)` }
-                    : {}),
-                }}
-              >
-                {line || "\u00A0"}
-              </span>
-            </div>
-          ))
-        ) : (
-          (lines ?? text.split("\n")).map((line, i) => (
-            <div
-              key={i}
-              className="leading-none"
-              style={{ height: lineHeightPx, lineHeight: lineHeightPx }}
-            >
-              {line || "\u00A0"}
-            </div>
-          ))
-        )
-      ) : (
+      multiline && !(centerAlignPixelPerfect && lines) ? (
+        (lines ?? text.split("\n")).map((line, i) => (
+          <div
+            key={i}
+            className="leading-none"
+            style={{ height: lineHeightPx, lineHeight: lineHeightPx }}
+          >
+            {line || "\u00A0"}
+          </div>
+        ))
+      ) : !multiline ? (
         <>{text}</>
-      )
+      ) : null
     ) : (
       children
     );
 
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || !containerRef.current) return;
+    if (!centerAlignPixelPerfect || !containerRef.current || !measureRef.current) return;
     const outer = containerRef.current.getBoundingClientRect();
-    if (multiline && lines) {
-      const lineSpans = containerRef.current.querySelectorAll<HTMLElement>("[data-line]");
-      const next: { x: number; y: number }[] = [];
-      lineSpans.forEach((el) => {
-        const inner = el.getBoundingClientRect();
-        const leftRel = inner.left - outer.left;
-        const topRel = inner.top - outer.top;
-        next.push({
-          x: Math.round(leftRel) - leftRel,
-          y: Math.round(topRel) - topRel,
-        });
-      });
-      setCorrections(next.length ? next : null);
-    } else if (measureRef.current) {
-      const inner = measureRef.current.getBoundingClientRect();
-      const leftRel = inner.left - outer.left;
-      const topRel = inner.top - outer.top;
-      setCorrections([
-        {
-          x: Math.round(leftRel) - leftRel,
-          y: Math.round(topRel) - topRel,
-        },
-      ]);
-    }
-  }, [centerAlignPixelPerfect, multiline, text, children]);
+    const inner = measureRef.current.getBoundingClientRect();
+    const leftRel = inner.left - outer.left;
+    const topRel = inner.top - outer.top;
+    setCorrection({
+      x: Math.round(leftRel) - leftRel,
+      y: Math.round(topRel) - topRel,
+    });
+  }, [centerAlignPixelPerfect, text, children]);
 
   const baseStyle: React.CSSProperties = {
     lineHeight: lineHeightPx,
@@ -135,28 +96,53 @@ export default function PixelPerfectText({
   }
 
   if (centerAlignPixelPerfect) {
-    if (corrections === null || corrections.length === 0) {
+    baseStyle.display = "flex";
+    baseStyle.justifyContent = "center";
+    if (correction === null) {
       baseStyle.visibility = "hidden";
     }
   }
 
-  const inner =
-    centerAlignPixelPerfect && !(multiline && lines) ? (
-      <span
-        ref={measureRef}
+  const inner = centerAlignPixelPerfect ? (
+    multiline && lines ? (
+      <div
+        ref={measureRef as React.RefObject<HTMLDivElement>}
         style={{
-          // inline-block so the span shrinks to the text size; we measure this box, not the full container
+          display: "inline-flex",
+          flexDirection: "column",
+          alignItems: "center",
+          ...(correction != null ? { transform: `translate(${correction.x}px, ${correction.y}px)` } : {}),
+        }}
+      >
+        {lines.map((line, i) => (
+          <span
+            key={i}
+            className="leading-none"
+            style={{
+              display: "block",
+              width: "max-content",
+              height: lineHeightPx,
+              lineHeight: lineHeightPx,
+            }}
+          >
+            {line || "\u00A0"}
+          </span>
+        ))}
+      </div>
+    ) : (
+      <span
+        ref={measureRef as React.RefObject<HTMLSpanElement>}
+        style={{
           display: "inline-block",
-          ...(corrections?.[0] != null
-            ? { transform: `translate(${corrections[0].x}px, ${corrections[0].y}px)` }
-            : {}),
+          ...(correction != null ? { transform: `translate(${correction.x}px, ${correction.y}px)` } : {}),
         }}
       >
         {content}
       </span>
-    ) : (
-      content
-    );
+    )
+  ) : (
+    content
+  );
 
   return (
     <Tag ref={containerRef as React.RefObject<HTMLDivElement & HTMLSpanElement>} className={className} style={baseStyle}>
