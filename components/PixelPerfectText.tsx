@@ -67,11 +67,11 @@ export default function PixelPerfectText({
     );
 
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || !containerRef.current) return;
-    const tagRect = containerRef.current.getBoundingClientRect();
+    if (!centerAlignPixelPerfect || !measureRef.current) return;
+    const rect = measureRef.current.getBoundingClientRect();
     setCorrection({
-      x: Math.round(tagRect.left) - tagRect.left,
-      y: Math.round(tagRect.top) - tagRect.top,
+      x: Math.round(rect.left) - rect.left,
+      y: Math.round(rect.top) - rect.top,
     });
   }, [centerAlignPixelPerfect, text, children]);
 
@@ -97,8 +97,6 @@ export default function PixelPerfectText({
     baseStyle.justifyContent = "center";
     if (correction === null) {
       baseStyle.visibility = "hidden";
-    } else {
-      baseStyle.transform = `translate3d(${correction.x}px, ${correction.y}px, 0)`;
     }
   }
 
@@ -111,6 +109,9 @@ export default function PixelPerfectText({
           display: "inline-flex",
           flexDirection: "column",
           alignItems: "center",
+          ...(correction != null
+            ? { transform: `translate3d(${correction.x}px, ${correction.y}px, 0)` }
+            : {}),
         }}
       >
         {lines.map((line, i) => (
@@ -132,7 +133,12 @@ export default function PixelPerfectText({
       <span
         ref={measureRef as React.RefObject<HTMLSpanElement>}
         data-pixel-perfect-inner
-        style={{ display: "inline-block" }}
+        style={{
+          display: "inline-block",
+          ...(correction != null
+            ? { transform: `translate3d(${correction.x}px, ${correction.y}px, 0)` }
+            : {}),
+        }}
       >
         {content}
       </span>
