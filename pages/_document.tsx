@@ -30,10 +30,6 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Jacquarda+Bastarda+9&display=swap"
           rel="stylesheet"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@75..150,800&display=swap"
-          rel="stylesheet"
-        />
       </Head>
       <body>
         <Main />
