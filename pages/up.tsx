@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import { Anybody } from "next/font/google";
 import { getLunarAgePercent } from "../lib/moonPhase";
 import CalendarColumn from "../components/CalendarColumn";
 import YearGrid from "../components/YearGrid";
 import RightColumn from "../components/RightColumn";
 import PixelPerfectText from "../components/PixelPerfectText";
-
-const anybody = Anybody({
-  weight: "800",
-  display: "swap",
-  subsets: ["latin"],
-  axes: ["wdth"],
-});
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -167,8 +159,12 @@ export default function EInkCalendar() {
 
         <div className=" w-1/2 h-full relative px-[4px] py-[12px] gap-[20px] flex flex-col items-left">
           <div
-            className={`${anybody.className} font-extrabold text-[72px] h-[80px] leading-[80px] text-center`}
-            style={{ fontVariationSettings: '"wdth" 150' }}
+            className="text-[72px] h-[80px] leading-[80px] text-center"
+            style={{
+              fontFamily: '"Anybody Variable", sans-serif',
+              fontWeight: 800,
+              fontVariationSettings: '"wdth" 150',
+            }}
           >
             {currentYear}
           </div>

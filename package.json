@@ -8,6 +8,7 @@
         "start": "next start"
     },
     "dependencies": {
+        "@fontsource-variable/anybody": "^5.2.7",
         "@sparticuz/chromium": "^141.0.0",
         "canvas": "^3.2.0",
         "lunar-javascript": "^1.7.7",
