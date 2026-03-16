@@ -175,7 +175,7 @@ export default function EInkCalendar() {
                 aria-hidden
               />
             )}
-            <div className="font-calendar-numerals text-[410px] leading-[420px] relative z-10">
+            <div className="font-calendar-numerals text-[410px] leading-[419px] relative z-10">
               {today.getDate()}
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function EInkCalendar() {
               lineHeight={17}
               width={489}
               centerAlignPixelPerfect
-              className="text-center font-jacquarda-bastarda-9 text-[13px] text-gray-800"
+              className="text-center font-jacquarda-bastarda-9 text-[13px]"
             >
               {`Today is day ${dayOfYear} of the year, ${daysUntilEndOfYear} days remaining this year - ${(dayOfYear / 365 * 100).toFixed(1)}% complete`}
             </PixelPerfectText>
