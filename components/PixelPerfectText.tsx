@@ -42,21 +42,45 @@ export default function PixelPerfectText({
 }: PixelPerfectTextProps) {
   const containerRef = useRef<HTMLElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
-  const [correction, setCorrection] = useState<{ x: number; y: number } | null>(null);
+  const [corrections, setCorrections] = useState<{ x: number; y: number }[] | null>(null);
 
   const lineHeightPx = `${lineHeight}px`;
+  const lines = text !== undefined && multiline ? text.split("\n") : null;
+
   const content =
     text !== undefined ? (
       multiline ? (
-        text.split("\n").map((line, i) => (
-          <div
-            key={i}
-            className="leading-none"
-            style={{ height: lineHeightPx, lineHeight: lineHeightPx }}
-          >
-            {line || "\u00A0"}
-          </div>
-        ))
+        centerAlignPixelPerfect && lines ? (
+          lines.map((line, i) => (
+            <div
+              key={i}
+              className="leading-none"
+              style={{ height: lineHeightPx, lineHeight: lineHeightPx, textAlign: "center" }}
+            >
+              <span
+                data-line
+                style={{
+                  display: "inline-block",
+                  ...(corrections?.[i] != null
+                    ? { transform: `translate(${corrections[i].x}px, ${corrections[i].y}px)` }
+                    : {}),
+                }}
+              >
+                {line || "\u00A0"}
+              </span>
+            </div>
+          ))
+        ) : (
+          (lines ?? text.split("\n")).map((line, i) => (
+            <div
+              key={i}
+              className="leading-none"
+              style={{ height: lineHeightPx, lineHeight: lineHeightPx }}
+            >
+              {line || "\u00A0"}
+            </div>
+          ))
+        )
       ) : (
         <>{text}</>
       )
@@ -65,16 +89,33 @@ export default function PixelPerfectText({
     );
 
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || !containerRef.current || !measureRef.current) return;
+    if (!centerAlignPixelPerfect || !containerRef.current) return;
     const outer = containerRef.current.getBoundingClientRect();
-    const inner = measureRef.current.getBoundingClientRect();
-    const leftRel = inner.left - outer.left;
-    const topRel = inner.top - outer.top;
-    setCorrection({
-      x: Math.round(leftRel) - leftRel,
-      y: Math.round(topRel) - topRel,
-    });
-  }, [centerAlignPixelPerfect, text, children]);
+    if (multiline && lines) {
+      const lineSpans = containerRef.current.querySelectorAll<HTMLElement>("[data-line]");
+      const next: { x: number; y: number }[] = [];
+      lineSpans.forEach((el) => {
+        const inner = el.getBoundingClientRect();
+        const leftRel = inner.left - outer.left;
+        const topRel = inner.top - outer.top;
+        next.push({
+          x: Math.round(leftRel) - leftRel,
+          y: Math.round(topRel) - topRel,
+        });
+      });
+      setCorrections(next.length ? next : null);
+    } else if (measureRef.current) {
+      const inner = measureRef.current.getBoundingClientRect();
+      const leftRel = inner.left - outer.left;
+      const topRel = inner.top - outer.top;
+      setCorrections([
+        {
+          x: Math.round(leftRel) - leftRel,
+          y: Math.round(topRel) - topRel,
+        },
+      ]);
+    }
+  }, [centerAlignPixelPerfect, multiline, text, children]);
 
   const baseStyle: React.CSSProperties = {
     lineHeight: lineHeightPx,
@@ -94,20 +135,20 @@ export default function PixelPerfectText({
   }
 
   if (centerAlignPixelPerfect) {
-    if (correction === null) {
+    if (corrections === null || corrections.length === 0) {
       baseStyle.visibility = "hidden";
     }
   }
 
   const inner =
-    centerAlignPixelPerfect ? (
+    centerAlignPixelPerfect && !(multiline && lines) ? (
       <span
         ref={measureRef}
         style={{
           // inline-block so the span shrinks to the text size; we measure this box, not the full container
           display: "inline-block",
-          ...(correction !== null
-            ? { transform: `translate(${correction.x}px, ${correction.y}px)` }
+          ...(corrections?.[0] != null
+            ? { transform: `translate(${corrections[0].x}px, ${corrections[0].y}px)` }
             : {}),
         }}
       >
