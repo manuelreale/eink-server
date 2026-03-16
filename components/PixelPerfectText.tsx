@@ -4,8 +4,8 @@ import React, { useRef, useLayoutEffect, useState } from "react";
  * Wraps text so it sits on integer pixel boundaries (pixel-perfect for pixel fonts).
  * - Uses integer lineHeight so each line starts at integer y (0, lineHeight, 2*lineHeight, …).
  * - When width and parentWidth are set, centers with integer margins so the block starts at integer x.
- * - When centerAlignPixelPerfect is true, measures content width and uses integer paddingLeft/Right so
- *   center-aligned content never starts on a half pixel (avoids (width - lineWidth) / 2 being fractional).
+ * - When centerAlignPixelPerfect is true, measures position with getBoundingClientRect(), then applies
+ *   a translate correction so the content snaps to Math.round() in both x and y (no fractional pixels).
  * - For multiline string content, each line is rendered in a fixed-height block (height = lineHeight).
  */
 type PixelPerfectTextProps = {
@@ -15,7 +15,7 @@ type PixelPerfectTextProps = {
   width?: number;
   /** When set with width, marginLeft/Right = (parentWidth - width) / 2. Use same parity as width. */
   parentWidth?: number;
-  /** When true, measure content and set integer padding so the content block starts at an integer x (pixel-perfect center). Requires width. */
+  /** When true, measure position and apply a translate so content snaps to integer pixels (no half/fraction pixels). */
   centerAlignPixelPerfect?: boolean;
   /** When true and `text` is provided, split by \n and render each line in a fixed-height block. */
   multiline?: boolean;
@@ -40,10 +40,9 @@ export default function PixelPerfectText({
   style = {},
   as: Tag = "div",
 }: PixelPerfectTextProps) {
+  const containerRef = useRef<HTMLElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
-  const [padding, setPadding] = useState<{ left: number; right: number } | null>(
-    centerAlignPixelPerfect && width !== undefined ? null : { left: 0, right: 0 }
-  );
+  const [correction, setCorrection] = useState<{ x: number; y: number } | null>(null);
 
   const lineHeightPx = `${lineHeight}px`;
   const content =
@@ -66,13 +65,16 @@ export default function PixelPerfectText({
     );
 
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || width === undefined || !measureRef.current) return;
-    const contentWidth = measureRef.current.offsetWidth;
-    const remainder = width - contentWidth;
-    const left = Math.floor(remainder / 2);
-    const right = remainder - left;
-    setPadding({ left: left >= 0 ? left : 0, right: right >= 0 ? right : 0 });
-  }, [centerAlignPixelPerfect, width, text, children]);
+    if (!centerAlignPixelPerfect || !containerRef.current || !measureRef.current) return;
+    const outer = containerRef.current.getBoundingClientRect();
+    const inner = measureRef.current.getBoundingClientRect();
+    const leftRel = inner.left - outer.left;
+    const topRel = inner.top - outer.top;
+    setCorrection({
+      x: Math.round(leftRel) - leftRel,
+      y: Math.round(topRel) - topRel,
+    });
+  }, [centerAlignPixelPerfect, text, children]);
 
   const baseStyle: React.CSSProperties = {
     lineHeight: lineHeightPx,
@@ -91,18 +93,24 @@ export default function PixelPerfectText({
     baseStyle.marginRight = margin;
   }
 
-  if (centerAlignPixelPerfect && width !== undefined) {
-    if (padding !== null) {
-      baseStyle.paddingLeft = padding.left;
-      baseStyle.paddingRight = padding.right;
-    } else {
+  if (centerAlignPixelPerfect) {
+    if (correction === null) {
       baseStyle.visibility = "hidden";
     }
   }
 
   const inner =
-    centerAlignPixelPerfect && width !== undefined ? (
-      <span ref={measureRef} style={{ display: "inline-block" }}>
+    centerAlignPixelPerfect ? (
+      <span
+        ref={measureRef}
+        style={{
+          // inline-block so the span shrinks to the text size; we measure this box, not the full container
+          display: "inline-block",
+          ...(correction !== null
+            ? { transform: `translate(${correction.x}px, ${correction.y}px)` }
+            : {}),
+        }}
+      >
         {content}
       </span>
     ) : (
@@ -110,7 +118,7 @@ export default function PixelPerfectText({
     );
 
   return (
-    <Tag className={className} style={baseStyle}>
+    <Tag ref={containerRef as React.RefObject<HTMLDivElement & HTMLSpanElement>} className={className} style={baseStyle}>
       {inner}
     </Tag>
   );
