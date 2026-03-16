@@ -33,6 +33,7 @@ export default function CalendarColumn({
         lineHeight={41}
         width={148}
         parentWidth={148}
+        centerAlignPixelPerfect
         className="text-center font-jersey25 text-[41px]"
       >
         {monthNames[displayMonth]}
@@ -45,6 +46,7 @@ export default function CalendarColumn({
         lineHeight={41}
         width={148}
         parentWidth={148}
+        centerAlignPixelPerfect
         className="text-center font-jersey25 text-[41px]"
       >
         {todayDayName}
@@ -55,6 +57,7 @@ export default function CalendarColumn({
           lineHeight={8}
           width={148}
           parentWidth={148}
+          centerAlignPixelPerfect
           className="font-tiny5 text-[8px] text-center"
         >
           {rokuyo?.nameDisplay ?? "Rokuyō"}
@@ -68,6 +71,7 @@ export default function CalendarColumn({
           lineHeight={17}
           width={116}
           parentWidth={148}
+          centerAlignPixelPerfect
           multiline
           text={rokuyo?.meaning ?? undefined}
           className="text-center font-jacquarda-bastarda-9 text-[13px] shrink-0"

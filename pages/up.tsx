@@ -179,7 +179,7 @@ export default function EInkCalendar() {
             <PixelPerfectText
               lineHeight={17}
               width={489}
-              parentWidth={489}
+              centerAlignPixelPerfect
               className="text-center font-jacquarda-bastarda-9 text-[13px] text-gray-800"
             >
               {`Today is day ${dayOfYear} of the year, ${daysUntilEndOfYear} days remaining this year - ${(dayOfYear / 365 * 100).toFixed(1)}% complete`}

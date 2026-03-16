@@ -65,15 +65,15 @@ export default function RightColumn({
       </div>
       {moonDebugDaysOffset !== 0 && (
         <>
-          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] text-center">
+          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} centerAlignPixelPerfect className="font-silkscreen text-[8px] text-center">
             {String(moonViewDate.getDate()).padStart(2, "0")}/{String(moonViewDate.getMonth() + 1).padStart(2, "0")}
           </PixelPerfectText>
-          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] text-center text-gray-500">
+          <PixelPerfectText lineHeight={8} width={150} parentWidth={150} centerAlignPixelPerfect className="font-silkscreen text-[8px] text-center text-gray-500">
             +{moonDebugDaysOffset} Day{moonDebugDaysOffset !== 1 ? "s" : ""}
           </PixelPerfectText>
         </>
       )}
-      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} className="font-jersey10 text-[18.66px] text-center">
+      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center">
         {getMoonPhaseNameFromKind(getMoonPhaseShape(moonPhasePercent).kind)}
       </PixelPerfectText>
       <div className="bg-black w-[150px] h-[1px] my-[16px]"> </div>
@@ -87,7 +87,7 @@ export default function RightColumn({
       <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
 
       <div className="w-[150px] flex flex-col items-center my-[16px] mb-[24px]">
-        <PixelPerfectText lineHeight={19} width={100} parentWidth={150} className="font-jersey10 text-[18.66px] text-center">
+        <PixelPerfectText lineHeight={19} width={100} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center">
           Day Forecast
         </PixelPerfectText>
         <div className="grid grid-cols-3 grid-rows-2 gap-x-[8px] gap-y-[8px] w-[150px] mt-[0px] justify-items-left">
@@ -110,7 +110,7 @@ export default function RightColumn({
             );
           })}
         </div>
-        <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] flex justify-center mt-[8px] gap-[8px]">
+        <PixelPerfectText lineHeight={8} width={150} parentWidth={150} centerAlignPixelPerfect className="font-silkscreen text-[8px] flex justify-center mt-[8px] gap-[8px]">
           <span><b>MAX:</b> {dayForecast?.max ?? "—"}°C</span>
           <span><b>AVG:</b> {dayForecast?.avg ?? "—"}°C</span>
           <span><b>MIN:</b> {dayForecast?.min ?? "—"}°C</span>
