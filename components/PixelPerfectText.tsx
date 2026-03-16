@@ -42,6 +42,7 @@ export default function PixelPerfectText({
 }: PixelPerfectTextProps) {
   const containerRef = useRef<HTMLElement>(null);
   const measureRef = useRef<HTMLElement>(null);
+  const lastMeasuredKeyRef = useRef<string | null>(null);
   const [correction, setCorrection] = useState<{ x: number; y: number } | null>(null);
 
   const lineHeightPx = `${lineHeight}px`;
@@ -68,12 +69,21 @@ export default function PixelPerfectText({
 
   useLayoutEffect(() => {
     if (!centerAlignPixelPerfect || !measureRef.current) return;
+    const contentKey = text ?? (typeof children === "string" ? children : "") + (multiline ? ":multi" : "");
+    if (contentKey !== lastMeasuredKeyRef.current) {
+      lastMeasuredKeyRef.current = contentKey;
+      if (correction !== null) {
+        setCorrection(null);
+        return;
+      }
+    }
+    if (correction !== null) return;
     const rect = measureRef.current.getBoundingClientRect();
     setCorrection({
       x: Math.round(rect.left) - rect.left,
       y: Math.round(rect.top) - rect.top,
     });
-  }, [centerAlignPixelPerfect, text, children]);
+  }, [centerAlignPixelPerfect, multiline, text, children, correction]);
 
   const baseStyle: React.CSSProperties = {
     lineHeight: lineHeightPx,
