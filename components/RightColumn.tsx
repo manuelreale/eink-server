@@ -77,7 +77,7 @@ export default function RightColumn({
         {getMoonPhaseNameFromKind(getMoonPhaseShape(moonPhasePercent).kind)}
       </PixelPerfectText>
       <div className="bg-black w-[150px] h-[1px] my-[12px]"> </div>
-      <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden">
+      <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden mb-[4px]">
         Fact of the day:
       </PixelPerfectText>
       <PixelPerfectText lineHeight={8} width={150} className="font-silkscreen text-[8px] text-left overflow-hidden" style={{ minHeight: 50 }}>
