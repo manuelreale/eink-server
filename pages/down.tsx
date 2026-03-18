@@ -210,7 +210,7 @@ export default function DownCalendar() {
                 week.map((day, colIndex) => {
                   const isFestive = day.isWeekend || day.isHoliday;
                   const patternStyle: React.CSSProperties = isFestive
-                    ? pixelPatternStyles.red5
+                    ? pixelPatternStyles.red1
                     : {};
                   const textShadowStyle: React.CSSProperties = {
                     textShadow:
