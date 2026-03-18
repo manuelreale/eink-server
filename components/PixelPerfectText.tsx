@@ -17,6 +17,8 @@ type PixelPerfectTextProps = {
   parentWidth?: number;
   /** When true, measure position and apply a translate so content snaps to integer pixels (no half/fraction pixels). */
   centerAlignPixelPerfect?: boolean;
+  /** When true, same snap-to-integer as centerAlignPixelPerfect but for left-aligned content (e.g. labels in pills). */
+  snapToIntegerPixels?: boolean;
   /** When true and `text` is provided, split by \n and render each line in a fixed-height block. */
   multiline?: boolean;
   /** String content (optional). If multiline, split by \n. */
@@ -33,6 +35,7 @@ export default function PixelPerfectText({
   width,
   parentWidth,
   centerAlignPixelPerfect = false,
+  snapToIntegerPixels = false,
   multiline = false,
   text,
   className = "",
@@ -67,8 +70,9 @@ export default function PixelPerfectText({
       children
     );
 
+  const shouldSnap = centerAlignPixelPerfect || snapToIntegerPixels;
   useLayoutEffect(() => {
-    if (!centerAlignPixelPerfect || !measureRef.current) return;
+    if (!shouldSnap || !measureRef.current) return;
     const contentKey = text ?? (typeof children === "string" ? children : "") + (multiline ? ":multi" : "");
     if (contentKey !== lastMeasuredKeyRef.current) {
       lastMeasuredKeyRef.current = contentKey;
@@ -83,7 +87,7 @@ export default function PixelPerfectText({
       x: Math.round(rect.left) - rect.left,
       y: Math.round(rect.top) - rect.top,
     });
-  }, [centerAlignPixelPerfect, multiline, text, children, correction]);
+  }, [shouldSnap, multiline, text, children, correction]);
 
   const baseStyle: React.CSSProperties = {
     lineHeight: lineHeightPx,
@@ -108,6 +112,9 @@ export default function PixelPerfectText({
     if (correction === null) {
       baseStyle.visibility = "hidden";
     }
+  }
+  if (snapToIntegerPixels && correction === null) {
+    baseStyle.visibility = "hidden";
   }
 
   const inner = centerAlignPixelPerfect ? (
@@ -153,6 +160,19 @@ export default function PixelPerfectText({
         {content}
       </span>
     )
+  ) : snapToIntegerPixels ? (
+    <span
+      ref={measureRef as React.RefObject<HTMLSpanElement>}
+      data-pixel-perfect-inner
+      style={{
+        display: "inline-block",
+        ...(correction != null
+          ? { transform: `translate3d(${correction.x}px, ${correction.y}px, 0)` }
+          : {}),
+      }}
+    >
+      {content}
+    </span>
   ) : (
     content
   );

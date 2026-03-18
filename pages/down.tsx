@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import { pixelPatternStyles } from "../lib/pixelPatterns";
+import PixelPerfectText from "../components/PixelPerfectText";
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const jerseyFontStyle = {
@@ -259,9 +260,15 @@ export default function DownCalendar() {
                                 color: "#cc0000",
                               }}
                             >
-                              <span className="bg-white px-[1px]">
+                              <PixelPerfectText
+                                lineHeight={10}
+                                snapToIntegerPixels
+                                as="span"
+                                className="bg-white px-[1px]"
+                                style={jerseyFontStyle}
+                              >
                                 {holidays[day.iso]}
-                              </span>
+                              </PixelPerfectText>
                             </div>
                           )}
                           {(eventsByISO[day.iso] ?? []).map((event, idx) => {
@@ -274,9 +281,15 @@ export default function DownCalendar() {
                                 className="pixel-corners-5px calendar-pill"
                                 style={pattern}
                               >
-                                <span className="bg-white px-[1px]">
+                                <PixelPerfectText
+                                  lineHeight={10}
+                                  snapToIntegerPixels
+                                  as="span"
+                                  className="bg-white px-[1px]"
+                                  style={jerseyFontStyle}
+                                >
                                   {event.title}
-                                </span>
+                                </PixelPerfectText>
                               </div>
                             );
                           })}
