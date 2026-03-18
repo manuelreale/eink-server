@@ -283,10 +283,11 @@ export default function DownCalendar() {
                               >
                                 <PixelPerfectText
                                   lineHeight={10}
+                                  width={110}
                                   snapToIntegerPixels
-                                  as="span"
-                                  className="bg-white px-[1px]"
-                                  style={jerseyFontStyle}
+                                  as="div"
+                                  className="bg-white px-[1px] font-silkscreen font-bold text-[8px] text-left break-words"
+                                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                                 >
                                   {event.title}
                                 </PixelPerfectText>
