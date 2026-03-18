@@ -278,20 +278,23 @@ export default function DownCalendar() {
                             return (
                               <div
                                 key={`${event.dateISO}-${idx}`}
-                                className="pixel-corners-5px calendar-pill w-fit max-w-[110px]"
-                                style={pattern}
+                                className="pixel-corners-5px calendar-pill calendar-pill--hug w-fit max-w-[110px]"
+                                style={{
+                                  backgroundColor: "white",
+                                  boxShadow: "0 0 0 1px white",
+                                  ...pattern,
+                                }}
                               >
                                 <PixelPerfectText
-                                  lineHeight={10}
+                                  lineHeight={9}
                                   snapToIntegerPixels
                                   as="div"
-                                  className="px-[2px] py-[1px] font-silkscreen font-bold text-[8px] text-left break-words text-black"
+                                  className="px-[2px] my-[4px] font-silkscreen font-bold text-[8px] text-left break-words text-black"
                                   style={{
                                     whiteSpace: "normal",
                                     wordBreak: "break-word",
                                     maxWidth: 110,
-                                    textShadow:
-                                      "1px 0 0 white, -1px 0 0 white, 0 1px 0 white, 0 -1px 0 white",
+                                    textShadow: "1px 0 0 white, -1px 0 0 white, 0 1px 0 white, 0 -1px 0 white, 1px 1px 0 white, -1px 1px 0 white, 1px -1px 0 white, -1px -1px 0 white, 2px 0 0 white, -2px 0 0 white, 0 2px 0 white, 0 -2px 0 white, 2px 1px 0 white, -2px 1px 0 white, 2px -1px 0 white, -2px -1px 0 white, 1px 2px 0 white, -1px 2px 0 white, 1px -2px 0 white, -1px -2px 0 white, 2px 2px 0 white, -2px 2px 0 white, 2px -2px 0 white, -2px -2px 0 white"
                                   }}
                                 >
                                   {event.title}

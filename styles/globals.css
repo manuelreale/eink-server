@@ -135,6 +135,14 @@
     text-overflow: ellipsis;
   }
 
+  /* Event pills: hug content height (single vs multi-line) */
+  .calendar-pill--hug {
+    height: auto;
+    min-height: 0;
+    align-items: flex-start;
+    white-space: normal;
+  }
+
   .calendar-fill {
     position: absolute;
     inset: 1px;
