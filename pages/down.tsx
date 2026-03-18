@@ -274,7 +274,7 @@ export default function DownCalendar() {
                           {(eventsByISO[day.iso] ?? []).map((event, idx) => {
                             const pattern =
                               (event.pattern && pixelPatternStyles[event.pattern]) ||
-                              pixelPatternStyles.grey25;
+                              pixelPatternStyles.grey10;
                             return (
                               <div
                                 key={`${event.dateISO}-${idx}`}
