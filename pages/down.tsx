@@ -31,10 +31,16 @@ type DayCell = {
 };
 
 export default function DownCalendar() {
-  const today = new Date();
-  const todayISO = formatDate(today);
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
+  // Use client-side date so "today" is correct on Vercel (static build would otherwise freeze to build date).
+  const [today, setToday] = React.useState<Date | null>(null);
+  React.useEffect(() => {
+    setToday(new Date());
+  }, []);
+
+  const effectiveDate = today ?? new Date();
+  const todayISO = today ? formatDate(today) : "";
+  const currentYear = effectiveDate.getFullYear();
+  const currentMonth = effectiveDate.getMonth();
 
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
   const mondayOffset = (firstDayOfMonth.getDay() + 6) % 7; // convert Sunday=0 to Monday=0
