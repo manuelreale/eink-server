@@ -278,16 +278,21 @@ export default function DownCalendar() {
                             return (
                               <div
                                 key={`${event.dateISO}-${idx}`}
-                                className="pixel-corners-5px calendar-pill"
+                                className="pixel-corners-5px calendar-pill w-fit max-w-[110px]"
                                 style={pattern}
                               >
                                 <PixelPerfectText
                                   lineHeight={10}
-                                  width={110}
                                   snapToIntegerPixels
                                   as="div"
-                                  className="bg-white px-[1px] font-silkscreen font-bold text-[8px] text-left break-words"
-                                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                                  className="px-[2px] py-[1px] font-silkscreen font-bold text-[8px] text-left break-words text-black"
+                                  style={{
+                                    whiteSpace: "normal",
+                                    wordBreak: "break-word",
+                                    maxWidth: 110,
+                                    textShadow:
+                                      "1px 0 0 white, -1px 0 0 white, 0 1px 0 white, 0 -1px 0 white",
+                                  }}
                                 >
                                   {event.title}
                                 </PixelPerfectText>
