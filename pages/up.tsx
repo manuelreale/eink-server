@@ -19,6 +19,18 @@ const DAY_NAMES_JP = [
   "日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日",
 ];
 
+const NL_TIMEZONE = "Europe/Amsterdam";
+
+function formatTimeDutch(date: Date): string {
+  return new Intl.DateTimeFormat("nl-NL", {
+    timeZone: NL_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
+}
+
 export default function EInkCalendar() {
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -45,6 +57,11 @@ export default function EInkCalendar() {
     phasePercent: number;
     source?: "api" | "fallback";
   } | null>(null);
+  const [requestedAtNlTime, setRequestedAtNlTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRequestedAtNlTime(formatTimeDutch(new Date()));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,6 +205,19 @@ export default function EInkCalendar() {
               {`Today is day ${dayOfYear} of the year, ${daysUntilEndOfYear} days remaining this year - ${(dayOfYear / 365 * 100).toFixed(1)}% complete`}
             </PixelPerfectText>
             <YearGrid currentYear={currentYear} today={today} />
+            {requestedAtNlTime != null && (
+              <div className="w-full flex justify-center shrink-0 mt-[6px]">
+                <PixelPerfectText
+                  lineHeight={8}
+                  width={120}
+                  parentWidth={489}
+                  centerAlignPixelPerfect
+                  className="font-tiny5 text-[8px] text-center text-gray-700"
+                >
+                  {requestedAtNlTime}
+                </PixelPerfectText>
+              </div>
+            )}
           </div>
         </div>
 
