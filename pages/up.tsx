@@ -192,7 +192,7 @@ export default function EInkCalendar() {
                 aria-hidden
               />
             )}
-            <div className="font-calendar-numerals text-[410px] leading-[419px] relative z-10">
+            <div className="font-calendar-numerals text-[410px] leading-[419px] tracking-widest relative z-10">
               {today.getDate()}
             </div>
           </div>
