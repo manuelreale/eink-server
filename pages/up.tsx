@@ -209,7 +209,7 @@ export default function EInkCalendar() {
           <div className="relative flex items-center justify-center">
             {showRedCircle && (
               <div
-                className="absolute rounded-full w-[320px] h-[320px] overflow-hidden"
+                className="absolute rounded-full w-[300px] h-[300px] overflow-hidden"
                 style={{
                   // Contrasting underlay: pattern SVG uses transparency for “off” pixels; same red as fill hid the dither.
                   backgroundColor: "#ffffff",
