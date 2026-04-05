@@ -131,18 +131,30 @@ export default function RightColumn({
             );
           })}
         </div>
-        <div className="grid grid-cols-3 gap-x-[8px] w-[150px] mt-[8px] justify-items-left">
-          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-normal">MAX:</span>
-            <span className="font-bold">{dayForecast?.max ?? "—"}°C</span>
+        <div className="grid grid-cols-3 gap-x-[8px] w-[150px] mt-[14px] justify-items-left">
+          <div className="flex flex-col w-[45px]">
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-normal text-left">
+              MAX:
+            </PixelPerfectText>
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-bold text-left">
+              {dayForecast?.max ?? "—"}°C
+            </PixelPerfectText>
           </div>
-          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-normal">AVG:</span>
-            <span className="font-bold">{dayForecast?.avg ?? "—"}°C</span>
+          <div className="flex flex-col w-[45px]">
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-normal text-left">
+              AVG:
+            </PixelPerfectText>
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-bold text-left">
+              {dayForecast?.avg ?? "—"}°C
+            </PixelPerfectText>
           </div>
-          <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-normal">MIN:</span>
-            <span className="font-bold">{dayForecast?.min ?? "—"}°C</span>
+          <div className="flex flex-col w-[45px]">
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-normal text-left">
+              MIN:
+            </PixelPerfectText>
+            <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-bold text-left">
+              {dayForecast?.min ?? "—"}°C
+            </PixelPerfectText>
           </div>
         </div>
       </div>
