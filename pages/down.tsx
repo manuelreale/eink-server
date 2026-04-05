@@ -9,6 +9,10 @@ const jerseyFontStyle = {
   fontSize: "18.66px",
 };
 
+/** White outline for calendar event / holiday labels (matches pill contrast on dither). */
+const EVENT_PILL_TEXT_SHADOW =
+  "1px 0 0 white, -1px 0 0 white, 0 1px 0 white, 0 -1px 0 white, 1px 1px 0 white, -1px 1px 0 white, 1px -1px 0 white, -1px -1px 0 white, 2px 0 0 white, -2px 0 0 white, 0 2px 0 white, 0 -2px 0 white, 2px 1px 0 white, -2px 1px 0 white, 2px -1px 0 white, -2px -1px 0 white, 1px 2px 0 white, -1px 2px 0 white, 1px -2px 0 white, -1px -2px 0 white, 2px 2px 0 white, -2px 2px 0 white, 2px -2px 0 white, -2px -2px 0 white";
+
 const formatDate = (d: Date) => {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -20,6 +24,7 @@ type CalendarEvent = {
   dateISO: string; // e.g. "2025-01-09"
   title: string;
   pattern?: keyof typeof pixelPatternStyles;
+  timeLabel?: string;
 };
 
 type DayCell = {
@@ -112,6 +117,7 @@ export default function DownCalendar() {
               dateISO: ev.dateISO,
               title: ev.title,
               pattern: ev.pattern as keyof typeof pixelPatternStyles | undefined,
+              timeLabel: typeof ev.timeLabel === "string" ? ev.timeLabel : undefined,
             }))
           );
         }
@@ -254,18 +260,24 @@ export default function DownCalendar() {
                         <div className="mt-auto flex flex-col gap-[2px]">
                           {day.isHoliday && holidays[day.iso] && (
                             <div
-                              className="pixel-corners-5px pixel-corner-fill-red calendar-pill"
+                              className="pixel-corners-5px pixel-corner-fill-red calendar-pill calendar-pill--hug w-fit max-w-[110px]"
                               style={{
-                                ...pixelPatternStyles.red20,
-                                color: "#cc0000",
+                                backgroundColor: "white",
+                                boxShadow: "0 0 0 1px #cc0000",
+                                ...pixelPatternStyles.red10,
                               }}
                             >
                               <PixelPerfectText
-                                lineHeight={10}
+                                lineHeight={9}
                                 snapToIntegerPixels
-                                as="span"
-                                className="bg-white px-[1px]"
-                                style={jerseyFontStyle}
+                                as="div"
+                                className="px-[2px] my-[4px] font-silkscreen font-bold text-[8px] text-left break-words text-red-600"
+                                style={{
+                                  whiteSpace: "normal",
+                                  wordBreak: "break-word",
+                                  maxWidth: 110,
+                                  textShadow: EVENT_PILL_TEXT_SHADOW,
+                                }}
                               >
                                 {holidays[day.iso]}
                               </PixelPerfectText>
@@ -285,20 +297,36 @@ export default function DownCalendar() {
                                   ...pattern,
                                 }}
                               >
-                                <PixelPerfectText
-                                  lineHeight={9}
-                                  snapToIntegerPixels
-                                  as="div"
-                                  className="px-[2px] my-[4px] font-silkscreen font-bold text-[8px] text-left break-words text-black"
-                                  style={{
-                                    whiteSpace: "normal",
-                                    wordBreak: "break-word",
-                                    maxWidth: 110,
-                                    textShadow: "1px 0 0 white, -1px 0 0 white, 0 1px 0 white, 0 -1px 0 white, 1px 1px 0 white, -1px 1px 0 white, 1px -1px 0 white, -1px -1px 0 white, 2px 0 0 white, -2px 0 0 white, 0 2px 0 white, 0 -2px 0 white, 2px 1px 0 white, -2px 1px 0 white, 2px -1px 0 white, -2px -1px 0 white, 1px 2px 0 white, -1px 2px 0 white, 1px -2px 0 white, -1px -2px 0 white, 2px 2px 0 white, -2px 2px 0 white, 2px -2px 0 white, -2px -2px 0 white"
-                                  }}
-                                >
-                                  {event.title}
-                                </PixelPerfectText>
+                                <div className="px-[2px] my-[4px] flex flex-col">
+                                  <PixelPerfectText
+                                    lineHeight={9}
+                                    snapToIntegerPixels
+                                    as="div"
+                                    className="font-silkscreen font-bold text-[8px] text-left break-words text-black"
+                                    style={{
+                                      whiteSpace: "normal",
+                                      wordBreak: "break-word",
+                                      maxWidth: 110,
+                                      textShadow: EVENT_PILL_TEXT_SHADOW,
+                                    }}
+                                  >
+                                    {event.title}
+                                  </PixelPerfectText>
+                                  {event.timeLabel != null && event.timeLabel !== "" && (
+                                    <PixelPerfectText
+                                      lineHeight={9}
+                                      snapToIntegerPixels
+                                      as="div"
+                                      className="font-silkscreen font-normal text-[8px] text-left text-black"
+                                      style={{
+                                        maxWidth: 110,
+                                        textShadow: EVENT_PILL_TEXT_SHADOW,
+                                      }}
+                                    >
+                                      {event.timeLabel}
+                                    </PixelPerfectText>
+                                  )}
+                                </div>
                               </div>
                             );
                           })}

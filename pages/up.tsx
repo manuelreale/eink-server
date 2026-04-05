@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { getLunarAgePercent } from "../lib/moonPhase";
+import { pixelPatternStyles } from "../lib/pixelPatterns";
 import CalendarColumn from "../components/CalendarColumn";
 import YearGrid from "../components/YearGrid";
 import RightColumn from "../components/RightColumn";
@@ -50,6 +51,8 @@ export default function EInkCalendar() {
     max: number;
     min: number;
     avg: number;
+    sunrise?: string | null;
+    sunset?: string | null;
   } | null>(null);
   const [moonDebugDaysOffset, setMoonDebugDaysOffset] = useState(0);
   const [moonPhaseApi, setMoonPhaseApi] = useState<{
@@ -67,9 +70,27 @@ export default function EInkCalendar() {
     let cancelled = false;
     fetch("/api/weather-forecast")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("Weather API error"))))
-      .then((data: { moments: { label: string; icon: "sun" | "clouds" | "rain" | "snow" }[]; max: number; min: number; avg: number }) => {
-        if (!cancelled) setDayForecast({ moments: data.moments, max: data.max, min: data.min, avg: data.avg });
-      })
+      .then(
+        (data: {
+          moments: { label: string; icon: "sun" | "clouds" | "rain" | "snow" }[];
+          max: number;
+          min: number;
+          avg: number;
+          sunrise?: string | null;
+          sunset?: string | null;
+        }) => {
+          if (!cancelled) {
+            setDayForecast({
+              moments: data.moments,
+              max: data.max,
+              min: data.min,
+              avg: data.avg,
+              sunrise: data.sunrise ?? null,
+              sunset: data.sunset ?? null,
+            });
+          }
+        }
+      )
       .catch(() => { if (!cancelled) setDayForecast(null); });
     return () => { cancelled = true; };
   }, []);
@@ -188,7 +209,12 @@ export default function EInkCalendar() {
           <div className="relative flex items-center justify-center">
             {showRedCircle && (
               <div
-                className="absolute rounded-full bg-red-500 w-[400px] h-[400px]"
+                className="absolute rounded-full w-[320px] h-[320px] overflow-hidden"
+                style={{
+                  // Contrasting underlay: pattern SVG uses transparency for “off” pixels; same red as fill hid the dither.
+                  backgroundColor: "#ffffff",
+                  ...pixelPatternStyles.red99,
+                }}
                 aria-hidden
               />
             )}

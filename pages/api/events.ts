@@ -4,6 +4,8 @@ type CalendarEvent = {
   dateISO: string;
   title: string;
   pattern?: string;
+  /** Start time for timed events (not all-day), e.g. "14:30" in nl-NL / Amsterdam for UTC Z. */
+  timeLabel?: string;
 };
 
 function requiredEnv(name: string): string {
@@ -32,22 +34,55 @@ function parseICSDate(value: string): string | null {
   return `${year}-${month}-${day}`;
 }
 
+/** Human-readable start time from DTSTART; omit for all-day. */
+function formatIcsEventTime(dtParams: string, dtValue: string): string | undefined {
+  if (/VALUE=DATE/i.test(dtParams)) return undefined;
+  const v = dtValue.trim();
+  const m = v.match(/^(\d{8})T(\d{2})(\d{2})(?:(\d{2}))?(Z)?/i);
+  if (!m) return undefined;
+  const ymd = m[1];
+  const hh = m[2];
+  const mm = m[3];
+  const ss = m[4] ?? "00";
+  const isUtc = !!m[5];
+  const y = Number(ymd.slice(0, 4));
+  const mo = Number(ymd.slice(4, 6));
+  const da = Number(ymd.slice(6, 8));
+  if (isUtc) {
+    const d = new Date(Date.UTC(y, mo - 1, da, Number(hh), Number(mm), Number(ss)));
+    return new Intl.DateTimeFormat("nl-NL", {
+      timeZone: "Europe/Amsterdam",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(d);
+  }
+  return `${hh}:${mm}`;
+}
+
 function parseICS(ics: string, windowStart: string, windowEnd: string): CalendarEvent[] {
   const events: CalendarEvent[] = [];
   const blocks = ics.split("BEGIN:VEVENT").slice(1);
   for (const block of blocks) {
     const section = "BEGIN:VEVENT" + block;
     const summaryMatch = section.match(/^SUMMARY:(.+)$/m);
-    const dtStartMatch = section.match(/^DTSTART[^:]*:(.+)$/m);
-    if (!dtStartMatch) continue;
-    const dateISO = parseICSDate(dtStartMatch[1]);
+    const dtStartHeader = section.match(/^DTSTART([^:\r\n]*):([^\r\n]+)$/im);
+    if (!dtStartHeader) continue;
+    const dtParams = dtStartHeader[1] ?? "";
+    const dtValue = dtStartHeader[2].trim();
+    const dateISO = parseICSDate(dtValue);
     if (!dateISO) continue;
 
     // Apply window filter
     if (dateISO < windowStart || dateISO > windowEnd) continue;
 
     const title = summaryMatch ? summaryMatch[1].trim() : "Untitled";
-    events.push({ dateISO, title });
+    const timeLabel = formatIcsEventTime(dtParams, dtValue);
+    events.push({
+      dateISO,
+      title,
+      ...(timeLabel ? { timeLabel } : {}),
+    });
   }
   return events;
 }

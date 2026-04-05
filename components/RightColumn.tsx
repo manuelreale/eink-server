@@ -9,6 +9,8 @@ type DayForecast = {
   max: number;
   min: number;
   avg: number;
+  sunrise?: string | null;
+  sunset?: string | null;
 } | null;
 
 const DEFAULT_MOMENTS = [
@@ -73,20 +75,39 @@ export default function RightColumn({
           </PixelPerfectText>
         </>
       )}
-      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center mb-[24px] mt-[8px]">
+      <PixelPerfectText lineHeight={19} width={150} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center mb-[8px] mt-[8px]">
         {getMoonPhaseNameFromKind(getMoonPhaseShape(moonPhasePercent).kind)}
       </PixelPerfectText>
-      <div className="bg-black w-[150px] h-[1px] my-[12px]"> </div>
-      <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden mb-[4px]">
+      <div className="bg-black w-[150px] h-px shrink-0 mt-[16px] mb-[8px]" aria-hidden />
+      <div className="grid w-[150px] gap-x-[8px] mb-[12px] shrink-0" style={{ gridTemplateColumns: "71px 71px" }}>
+        <div className="flex flex-col w-[71px]">
+          <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-normal text-left">
+            Sunrise:
+          </PixelPerfectText>
+          <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-bold text-left">
+            {dayForecast?.sunrise ?? "—"}
+          </PixelPerfectText>
+        </div>
+        <div className="flex flex-col w-[71px]">
+          <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-normal text-left">
+            Sunset:
+          </PixelPerfectText>
+          <PixelPerfectText lineHeight={8} snapToIntegerPixels as="div" className="font-silkscreen text-[8px] font-bold text-left">
+            {dayForecast?.sunset ?? "—"}
+          </PixelPerfectText>
+        </div>
+      </div>
+      <div className="bg-black w-[150px] h-px shrink-0 mt-[0px] mb-[12px]" aria-hidden />
+      <PixelPerfectText lineHeight={8} width={150} parentWidth={150} className="font-silkscreen text-[8px] font-bold text-left overflow-hidden shrink-0 mb-[4px]">
         Fact of the day:
       </PixelPerfectText>
-      <PixelPerfectText lineHeight={8} width={150} className="font-silkscreen text-[8px] text-left overflow-hidden" style={{ minHeight: 50 }}>
+      <PixelPerfectText lineHeight={8} width={150} className="font-silkscreen text-[8px] text-left overflow-hidden shrink-0" style={{ minHeight: 50 }}>
         {factOfTheDay ?? "—"}
       </PixelPerfectText>
 
-      <div className="bg-black w-[150px] h-[1px] my-[8px]"> </div>
+      <div className="bg-black w-[150px] h-px shrink-0 my-[8px]" aria-hidden />
 
-      <div className="w-[150px] flex flex-col items-start my-[16px] mb-[24px]">
+      <div className="w-[150px] flex flex-col items-start my-[4px] mb-[16px]">
         <PixelPerfectText lineHeight={19} width={100} parentWidth={150} centerAlignPixelPerfect className="font-jersey10 text-[18.66px] text-center w-full mb-[6px]">
           Day Forecast
         </PixelPerfectText>
@@ -112,16 +133,16 @@ export default function RightColumn({
         </div>
         <div className="grid grid-cols-3 gap-x-[8px] w-[150px] mt-[8px] justify-items-left">
           <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-bold">MAX:</span>
-            <span>{dayForecast?.max ?? "—"}°C</span>
+            <span className="font-normal">MAX:</span>
+            <span className="font-bold">{dayForecast?.max ?? "—"}°C</span>
           </div>
           <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-bold">AVG:</span>
-            <span>{dayForecast?.avg ?? "—"}°C</span>
+            <span className="font-normal">AVG:</span>
+            <span className="font-bold">{dayForecast?.avg ?? "—"}°C</span>
           </div>
           <div className="flex flex-col w-[45px] font-silkscreen text-[8px]">
-            <span className="font-bold">MIN:</span>
-            <span>{dayForecast?.min ?? "—"}°C</span>
+            <span className="font-normal">MIN:</span>
+            <span className="font-bold">{dayForecast?.min ?? "—"}°C</span>
           </div>
         </div>
       </div>

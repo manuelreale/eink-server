@@ -33,7 +33,16 @@ export type DayForecastResponse = {
   max: number;
   min: number;
   avg: number;
+  /** Local time HH:mm (Europe/Amsterdam) from Open-Meteo daily sunrise/sunset. */
+  sunrise: string | null;
+  sunset: string | null;
 };
+
+function formatSunTimeFromIso(iso: string | undefined): string | null {
+  if (!iso || typeof iso !== "string") return null;
+  const m = iso.match(/T(\d{2}):(\d{2})/);
+  return m ? `${m[1]}:${m[2]}` : null;
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {
@@ -48,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     url.searchParams.set("timezone", TIMEZONE);
     url.searchParams.set("forecast_days", "1");
     url.searchParams.set("hourly", "temperature_2m,weathercode");
-    url.searchParams.set("daily", "temperature_2m_max,temperature_2m_min");
+    url.searchParams.set("daily", "temperature_2m_max,temperature_2m_min,sunrise,sunset");
 
     const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
     if (!response.ok) {
@@ -59,7 +68,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const data = (await response.json()) as {
       hourly?: { time?: string[]; temperature_2m?: number[]; weathercode?: number[] };
-      daily?: { temperature_2m_max?: number[]; temperature_2m_min?: number[] };
+      daily?: {
+        temperature_2m_max?: number[];
+        temperature_2m_min?: number[];
+        sunrise?: string[];
+        sunset?: string[];
+      };
     };
 
     const temps = data.hourly?.temperature_2m ?? [];
@@ -84,6 +98,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       max: Math.round(max * 10) / 10,
       min: Math.round(min * 10) / 10,
       avg: Math.round(avg * 10) / 10,
+      sunrise: formatSunTimeFromIso(data.daily?.sunrise?.[0]),
+      sunset: formatSunTimeFromIso(data.daily?.sunset?.[0]),
     };
 
     res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate");
